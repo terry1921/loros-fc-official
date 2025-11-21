@@ -1,8 +1,8 @@
 import React from 'react';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Button, MatchCard, NewsCard } from '../components';
-import { MOCK_DATA } from '../data/mock';
+import Link from 'next/link';
+import { Button, MatchCard, NewsCard } from './components';
+import { MOCK_DATA } from './data/mock';
 
 const HomeScreen: React.FC = () => {
   return (
@@ -55,7 +55,7 @@ const HomeScreen: React.FC = () => {
                   <div className="h-1 w-20 bg-yellow-400 mt-2"></div>
               </div>
               <Link
-                  to="/news"
+                  href="/news"
                   className="hidden md:flex items-center gap-2 text-emerald-700 font-bold hover:text-emerald-900"
               >
                   Ver todas <ArrowRight size={20}/>
@@ -67,7 +67,7 @@ const HomeScreen: React.FC = () => {
             ))}
           </div>
           <Link
-              to="/news"
+              href="/news"
               className="md:hidden w-full mt-8 py-3 border border-emerald-200 text-emerald-700 font-bold rounded-lg text-center"
           >
               Ver todas las noticias
@@ -84,7 +84,7 @@ const HomeScreen: React.FC = () => {
               <p className="text-emerald-200 mb-8 max-w-2xl mx-auto text-lg">
                   El nuevo jersey oficial 2024 ya está disponible en nuestra tienda en línea. Personalízalo con tu nombre y número.
               </p>
-              <Link to="/shop">
+              <Link href="/shop">
                 <Button variant="primary">Ir a la Tienda Oficial</Button>
               </Link>
           </div>

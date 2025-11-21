@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import {Facebook, Instagram, Shield, Twitter, Youtube} from 'lucide-react';
 
 export const Footer: React.FC = () => {
@@ -18,10 +19,10 @@ export const Footer: React.FC = () => {
             <div className="flex gap-4">
               <div
                 className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-emerald-900 transition-colors cursor-pointer">
-                <a href={'https://www.facebook.com/profile.php?id=61583836440400'} target="_blank" rel="noopener noreferrer"><Facebook size={18}/></a></div>
+                <Link href={'https://www.facebook.com/profile.php?id=61583836440400'} target="_blank" rel="noopener noreferrer"><Facebook size={18}/></Link></div>
               <div
                 className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-emerald-900 transition-colors cursor-pointer">
-                <a href={'https://www.instagram.com/lorosfcqro/'}><Instagram size={18}/></a></div>
+                <Link href={'https://www.instagram.com/lorosfcqro/'}><Instagram size={18}/></Link></div>
               {/*<div
                 className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-emerald-900 transition-colors cursor-pointer">
                 <Twitter size={18}/></div>
@@ -34,20 +35,20 @@ export const Footer: React.FC = () => {
           <div>
             <h4 className="font-bold text-lg mb-6 text-white">Club</h4>
             <ul className="space-y-3 text-emerald-400/60 text-sm">
-              <li className="hover:text-yellow-400 cursor-pointer">Historia</li>
-              <li className="hover:text-yellow-400 cursor-pointer">Estadio</li>
-              <li className="hover:text-yellow-400 cursor-pointer">Directiva</li>
-              <li className="hover:text-yellow-400 cursor-pointer">Patrocinadores</li>
+              <li className="hover:text-yellow-400"><Link href="#">Historia</Link></li>
+              <li className="hover:text-yellow-400"><Link href="#">Estadio</Link></li>
+              <li className="hover:text-yellow-400"><Link href="#">Directiva</Link></li>
+              <li className="hover:text-yellow-400"><Link href="#">Patrocinadores</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-lg mb-6 text-white">Afición</h4>
             <ul className="space-y-3 text-emerald-400/60 text-sm">
-              <li className="hover:text-yellow-400 cursor-pointer">Membresías</li>
-              <li className="hover:text-yellow-400 cursor-pointer">Boletos</li>
-              <li className="hover:text-yellow-400 cursor-pointer">Tienda</li>
-              <li className="hover:text-yellow-400 cursor-pointer">Wallpapers</li>
+              <li className="hover:text-yellow-400"><Link href="#">Membresías</Link></li>
+              <li className="hover:text-yellow-400"><Link href="#">Boletos</Link></li>
+              <li className="hover:text-yellow-400"><Link href="/shop">Tienda</Link></li>
+              <li className="hover:text-yellow-400"><Link href="#">Wallpapers</Link></li>
             </ul>
           </div>
 
@@ -68,9 +69,9 @@ export const Footer: React.FC = () => {
           className="border-t border-emerald-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-emerald-600">
           <p>&copy; 2024 Loros Fútbol Club. Todos los derechos reservados.</p>
           <div className="flex gap-6">
-            <span>Privacidad</span>
-            <span>Términos</span>
-            <span>Contacto</span>
+            <Link href="#">Privacidad</Link>
+            <Link href="#">Términos</Link>
+            <Link href="#">Contacto</Link>
           </div>
         </div>
       </div>
