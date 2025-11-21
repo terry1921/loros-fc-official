@@ -8,13 +8,13 @@ const HomeScreen: React.FC = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative h-[85vh] flex items-center justify-center overflow-hidden bg-emerald-900">
+      <section className="relative flex items-center justify-center overflow-hidden bg-emerald-900 pt-32 pb-20 md:pt-40 md:pb-24">
         {/* Background Gradients */}
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-black"></div>
         <div className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
         <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-yellow-400 rounded-full blur-[120px] opacity-20"></div>
 
-        <div className="container mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center mt-16">
+        <div className="container mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 text-center md:text-left mb-12 md:mb-0">
             <span className="inline-block px-4 py-1 bg-emerald-800/50 border border-emerald-500 text-emerald-300 rounded-full text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
               Temporada 2024/25
@@ -51,7 +51,7 @@ const HomeScreen: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-end mb-12">
               <div>
-                  <h2 className="text-3xl font-black text-emerald-900 uppercase">Últimas Noticias</h2>
+                  <h2 className="text-2xl md:text-3xl font-black text-emerald-900 uppercase">Últimas Noticias</h2>
                   <div className="h-1 w-20 bg-yellow-400 mt-2"></div>
               </div>
               <Link
