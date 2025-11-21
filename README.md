@@ -1,40 +1,42 @@
 # Loros FC Official Website
 
-This is the official repository for the Loros FC website. The application is built using React, TypeScript, Vite, and Tailwind CSS. It serves as a hub for fans to check match schedules, squad details, news, and the official shop.
+This is the official repository for the Loros FC website. The application is built using Next.js (App Router), TypeScript, and Tailwind CSS. It serves as a hub for fans to check match schedules, squad details, news, and the official shop.
 
 ## 🚀 Features
 
 - **Home Dashboard**: Overview of the next match, last match results, and latest news.
 - **Squad**: Detailed view of the team players, including positions and numbers.
 - **News**: Latest updates and announcements from the club.
-- **Shop**: (Upcoming) Official merchandise store.
+- **Shop**: Official merchandise store.
 - **Responsive Design**: Built with Tailwind CSS to ensure a seamless experience across devices.
-- **Navigation**: Smooth client-side routing with React Router DOM.
+- **Navigation**: Client-side navigation optimized by Next.js.
 
 ## 🛠️ Tech Stack
 
-- **Frontend Framework**: [React](https://react.dev/)
+- **Framework**: [Next.js](https://nextjs.org/) (App Router)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Build Tool**: [Vite](https://vitejs.dev/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Routing**: [React Router DOM](https://reactrouter.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
+- **React**: 19 (RC/Canary)
 
 ## 📂 Project Structure
 
 ```
 loros-fc-official/
-├── src/
+├── app/
 │   ├── components/      # Reusable UI components (Cards, Buttons, Layouts)
 │   ├── data/            # Mock data for the application
-│   ├── navigation/      # Navigation configuration
-│   ├── screens/         # Main page views (Home, News, Shop, Squad)
-│   ├── types/           # TypeScript type definitions
-│   ├── App.tsx          # Main application component
-│   └── main.tsx         # Entry point
+│   ├── news/            # News route
+│   ├── shop/            # Shop route
+│   ├── squad/           # Squad route
+│   ├── types/           # TypeScript definitions
+│   ├── globals.css      # Global styles
+│   ├── layout.tsx       # Root layout
+│   └── page.tsx         # Home page (Entry point)
 ├── public/              # Static assets
-├── package.json         # Dependencies and scripts
-└── vite.config.ts       # Vite configuration
+├── next.config.mjs      # Next.js configuration
+├── tailwind.config.js   # Tailwind configuration
+└── package.json         # Dependencies and scripts
 ```
 
 ## 🏁 Getting Started
@@ -65,7 +67,7 @@ Start the development server:
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173` (or the port shown in your terminal).
+The application will be available at `http://localhost:3000` (or the port shown in your terminal).
 
 ### Building for Production
 
@@ -74,17 +76,17 @@ To build the app for production:
 npm run build
 ```
 
-To preview the production build:
+To start the production server:
 ```bash
-npm run preview
+npm run start
 ```
 
 ## 📜 Scripts
 
 - `npm run dev`: Starts the development server.
 - `npm run build`: Builds the app for production.
+- `npm run start`: Starts the production server.
 - `npm run lint`: Runs ESLint to check for code quality issues.
-- `npm run preview`: Previews the production build locally.
 
 ## 🤝 Contributing
 
