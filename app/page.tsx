@@ -2,9 +2,25 @@ import React from 'react';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { Button, MatchCard, NewsCard } from './components';
-import { MOCK_DATA } from './data/mock';
+import { database } from './lib/firebase';
+import { get, ref } from 'firebase/database';
 
-const HomeScreen: React.FC = () => {
+async function getRealtimeData() {
+  const refData = ref(database, 'data');
+  const snapshot = await get(refData);
+  if (snapshot.exists()) {
+    return snapshot.val();
+  } else {
+    return {};
+  }
+}
+
+const HomeScreen: React.FC = async () => {
+
+  const data = await getRealtimeData();
+  console.log("asdf" + data);
+
+
   return (
     <>
       {/* Hero Section */}
@@ -37,10 +53,10 @@ const HomeScreen: React.FC = () => {
           {/* Dynamic Match Center Card Floating */}
           <div className="md:w-1/2 flex flex-col items-center md:items-end gap-6 w-full">
              <div className="w-full max-w-md transform hover:-translate-y-2 transition-transform duration-300">
-                <MatchCard data={MOCK_DATA.nextMatch} type="next" />
+                <MatchCard data={data.nextMatch} type="next" />
              </div>
              <div className="w-full max-w-md transform hover:-translate-y-2 transition-transform duration-300">
-                <MatchCard data={MOCK_DATA.lastMatch} type="last" />
+                <MatchCard data={data.lastMatch} type="last" />
              </div>
           </div>
         </div>
@@ -62,7 +78,7 @@ const HomeScreen: React.FC = () => {
               </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {MOCK_DATA.news.map((news) => (
+            {Array.isArray(data.news) && data.news.map((news) => (
               <NewsCard key={news.id} item={news} />
             ))}
           </div>

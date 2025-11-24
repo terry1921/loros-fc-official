@@ -10,6 +10,21 @@ interface MatchCardProps {
 export const MatchCard: React.FC<MatchCardProps> = ({ data, type }) => {
   const isNext = type === 'next';
 
+  if (!data) {
+    return (
+      <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+        <div className={`p-4 ${isNext ? 'bg-emerald-800/50' : 'bg-gray-800/50'}`}>
+          <h3 className="text-white font-bold text-sm uppercase tracking-widest">
+            {isNext ? 'Próximo Partido' : 'Último Resultado'}
+          </h3>
+        </div>
+        <div className="p-6">
+          <p className="text-white text-center">No information available</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
       <div className={`p-4 ${isNext ? 'bg-emerald-800/50' : 'bg-gray-800/50'}`}>
