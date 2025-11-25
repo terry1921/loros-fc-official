@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { database } from '../lib/firebase';
+import { database, auth } from '../lib/firebase';
 import { ref, get, set } from 'firebase/database';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 import { SectionTitle } from '../components';
 import { Match } from '../types';
 
@@ -13,6 +15,7 @@ const AdminScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +40,11 @@ const AdminScreen: React.FC = () => {
     };
     fetchData();
   }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/login');
+  };
 
   const handleSaveLastMatch = async () => {
     if (!lastMatch) return;
@@ -90,7 +98,12 @@ const AdminScreen: React.FC = () => {
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
-        <SectionTitle title="Admin Panel" subtitle="Manage application data" />
+        <div className="flex justify-between items-center mb-8">
+          <SectionTitle title="Admin Panel" subtitle="Manage application data" />
+          <button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
+            Logout
+          </button>
+        </div>
 
         <div className="mb-8 bg-white p-6 rounded-lg shadow">
             <h3 className="text-xl font-bold mb-4">Admin Sections</h3>
