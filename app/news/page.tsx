@@ -1,11 +1,11 @@
 import React from 'react';
 import { SectionTitle } from '../components';
 import { Shield } from 'lucide-react';
-import { database } from './../lib/firebase';
+import { database } from '../lib/firebase';
 import { get, ref } from 'firebase/database';
 
 async function getRealtimeData() {
-  const refData = ref(database, 'data/news');
+  const refData = ref(database, '/news');
   const snapshot = await get(refData);
   if (snapshot.exists()) {
     return snapshot.val();

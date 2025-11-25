@@ -1,10 +1,11 @@
 import React from 'react';
 import { PlayerCard, SectionTitle } from '../components';
-import { database } from './../lib/firebase';
+import { database } from '../lib/firebase';
 import { get, ref } from 'firebase/database';
+import {Player} from "../types";
 
 async function getRealtimeData() {
-  const refData = ref(database, 'data/players');
+  const refData = ref(database, '/players');
   const snapshot = await get(refData);
   if (snapshot.exists()) {
     return snapshot.val();
@@ -31,7 +32,7 @@ const SquadScreen: React.FC = async () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {Array.isArray(players) && players.map((player) => (
+          {Array.isArray(players) && players.map((player: Player) => (
             <PlayerCard key={player.id} player={player} />
           ))}
         </div>

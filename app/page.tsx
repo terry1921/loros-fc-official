@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { Button, MatchCard, NewsCard } from './components';
 import { database } from './lib/firebase';
 import { get, ref } from 'firebase/database';
+import {News} from "./types";
 
 async function getRealtimeData() {
-  const refData = ref(database, 'data');
+  const refData = ref(database, '/');
   const snapshot = await get(refData);
   if (snapshot.exists()) {
     return snapshot.val();
@@ -16,10 +17,7 @@ async function getRealtimeData() {
 }
 
 const HomeScreen: React.FC = async () => {
-
   const data = await getRealtimeData();
-  console.log("asdf" + data);
-
 
   return (
     <>
@@ -78,7 +76,7 @@ const HomeScreen: React.FC = async () => {
               </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {Array.isArray(data.news) && data.news.map((news) => (
+            {Array.isArray(data.news) && data.news.map((news: News) => (
               <NewsCard key={news.id} item={news} />
             ))}
           </div>
