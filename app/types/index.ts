@@ -1,10 +1,3 @@
-export type Tab = 'home' | 'squad' | 'news' | 'shop';
-
-export interface NavLinkProps {
-  tab: Tab;
-  label: string;
-}
-
 export interface Match {
   opponent: string;
   date?: string;
@@ -35,11 +28,4 @@ export interface News {
   content: string;
   summary: string;
   active: boolean;
-}
-
-export interface MockData {
-  nextMatch: Match;
-  lastMatch: Match;
-  players: Player[];
-  news: News[];
 }

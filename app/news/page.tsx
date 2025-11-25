@@ -3,6 +3,7 @@ import { SectionTitle } from '../components';
 import { Shield } from 'lucide-react';
 import { database } from '../lib/firebase';
 import { get, ref } from 'firebase/database';
+import {News} from "../types";
 
 async function getRealtimeData() {
   const refData = ref(database, 'data/news');
@@ -15,9 +16,10 @@ async function getRealtimeData() {
 }
 
 const NewsScreen: React.FC = async () => {
-  const news = await getRealtimeData();
-  const featuredNews = Array.isArray(news) && news.length > 0 ? news[0] : null;
-  const standardNews = Array.isArray(news) && news.length > 1 ? news.slice(1) : [];
+  const dataNews: News[] = await getRealtimeData();
+  const news = Object.values(dataNews)
+  const featuredNews: News | null = news.length > 0 ? news[0] : null
+  const standardNews: News[] = news.length > 1 ? news.slice(1) : []
 
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
@@ -35,7 +37,7 @@ const NewsScreen: React.FC = async () => {
                               {featuredNews.title}
                           </h3>
                           <p className="text-gray-300 mb-4 hidden md:block">
-                              {featuredNews.description}
+                              {featuredNews.summary}
                           </p>
                       </div>
                       <div className="absolute inset-0 flex items-center justify-center opacity-30">

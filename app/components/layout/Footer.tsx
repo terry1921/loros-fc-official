@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import {Facebook, Instagram, Shield, Twitter, Youtube} from 'lucide-react';
+import {Facebook, Instagram} from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -46,8 +46,8 @@ export const Footer: React.FC = () => {
           <div>
             <h4 className="font-bold text-lg mb-6 text-white">Afición</h4>
             <ul className="space-y-3 text-emerald-400/60 text-sm">
-              <li className="hover:text-yellow-400"><Link href="#">Membresías</Link></li>
-              <li className="hover:text-yellow-400"><Link href="#">Boletos</Link></li>
+              {/*<li className="hover:text-yellow-400"><Link href="#">Membresías</Link></li>
+              <li className="hover:text-yellow-400"><Link href="#">Boletos</Link></li>*/}
               <li className="hover:text-yellow-400"><Link href="/shop">Tienda</Link></li>
               <li className="hover:text-yellow-400"><Link href="#">Wallpapers</Link></li>
             </ul>

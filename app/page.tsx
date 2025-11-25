@@ -18,6 +18,7 @@ async function getRealtimeData() {
 
 const HomeScreen: React.FC = async () => {
   const data = await getRealtimeData();
+  const news: News[] = data.news
 
   return (
     <>
@@ -43,8 +44,8 @@ const HomeScreen: React.FC = async () => {
               El sitio oficial de Loros FC. Sigue cada jugada, conoce a nuestros jugadores y vive la intensidad desde la cancha.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Button variant="primary">Ver Calendario</Button>
-              <Button variant="outline">Hacerse Socio</Button>
+              {/*<Button variant="primary">Ver Calendario</Button>*/}
+              {/*<Button variant="outline">Hacerse Socio</Button>*/}
             </div>
           </div>
 
@@ -76,8 +77,8 @@ const HomeScreen: React.FC = async () => {
               </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {Array.isArray(data.news) && data.news.map((news: News) => (
-              <NewsCard key={news.id} item={news} />
+            {Object.values(news).map((n) => (
+              <NewsCard key={n.id} item={n} />
             ))}
           </div>
           <Link
