@@ -1,3 +1,6 @@
+export type Position = 'Portero' | 'Defensa' | 'Medio' | 'Delantero' | undefined;
+
+
 export interface Match {
   opponent: string;
   date?: string;

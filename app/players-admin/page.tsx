@@ -9,6 +9,21 @@ import { Player } from '../types';
 // Generate a unique ID for new players
 const generateUniqueId = () => `player_${new Date().getTime()}`;
 
+const getPositionImg = (position: string) => {
+  switch (position) {
+    case 'Goalkeeper':
+      return 'bg-blue-500';
+    case 'Defender':
+      return 'bg-yellow-400';
+    case 'Midfielder':
+      return 'bg-green-500';
+    case 'Forward':
+      return 'bg-red-500';
+    default:
+      return 'bg-gray-200';
+  }
+};
+
 const PlayersAdminScreen: React.FC = () => {
   const [players, setPlayers] = useState<Record<string, Player>>({});
   const [loading, setLoading] = useState(true);
@@ -42,8 +57,9 @@ const PlayersAdminScreen: React.FC = () => {
     setError('');
     setSuccess('');
     try {
+      const playerWithImg = { ...playerToSave, img: getPositionImg(playerToSave.position) };
       const playerRef = ref(database, `data/players/${playerToSave.id}`);
-      await set(playerRef, playerToSave);
+      await set(playerRef, playerWithImg);
       setSuccess(`Player ${playerToSave.name} saved successfully!`);
       setEditingPlayer(null);
       fetchPlayers(); // Refresh the list
@@ -74,7 +90,7 @@ const PlayersAdminScreen: React.FC = () => {
       name: '',
       position: 'Goalkeeper',
       number: 0,
-      img: 'bg-red-200',
+      img: getPositionImg('Goalkeeper'),
       photoUrl: '/assets/default_player.png',
       active: true,
     });
