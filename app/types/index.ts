@@ -27,11 +27,14 @@ export interface Player {
 }
 
 export interface News {
-  id: number;
+  id: string;
   title: string;
   date: string;
+  image: string;
   category: string;
+  content: string;
   summary: string;
+  active: boolean;
 }
 
 export interface MockData {

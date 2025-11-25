@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { database } from '../lib/firebase';
 import { ref, get, set } from 'firebase/database';
 import { SectionTitle } from '../components';
 import { Match } from '../types';
 
 const AdminScreen: React.FC = () => {
-  const [data, setData] = useState('');
   const [lastMatch, setLastMatch] = useState<Match | null>(null);
   const [nextMatch, setNextMatch] = useState<Match | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,15 +21,12 @@ const AdminScreen: React.FC = () => {
         const snapshot = await get(dataRef);
         if (snapshot.exists()) {
           const allData = snapshot.val();
-          setData(JSON.stringify(allData, null, 2));
           if (allData.lastMatch) {
             setLastMatch(allData.lastMatch);
           }
           if (allData.nextMatch) {
             setNextMatch(allData.nextMatch);
           }
-        } else {
-          setData('{}');
         }
       } catch (err) {
         setError('Failed to fetch data.');
@@ -40,20 +37,6 @@ const AdminScreen: React.FC = () => {
     };
     fetchData();
   }, []);
-
-  const handleSaveJson = async () => {
-    setError('');
-    setSuccess('');
-    try {
-      const parsedData = JSON.parse(data);
-      const dataRef = ref(database, 'data');
-      await set(dataRef, parsedData);
-      setSuccess('Data saved successfully!');
-    } catch (err) {
-      setError('Failed to save data. Make sure it is valid JSON.');
-      console.error(err);
-    }
-  };
 
   const handleSaveLastMatch = async () => {
     if (!lastMatch) return;
@@ -108,6 +91,18 @@ const AdminScreen: React.FC = () => {
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
         <SectionTitle title="Admin Panel" subtitle="Manage application data" />
+
+        <div className="mb-8 bg-white p-6 rounded-lg shadow">
+            <h3 className="text-xl font-bold mb-4">Admin Sections</h3>
+            <div className="flex flex-wrap gap-4">
+                <Link href="/players-admin" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
+                    Manage Players
+                </Link>
+                <Link href="/news-admin" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
+                    Manage News
+                </Link>
+            </div>
+        </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Last Match Form */}
@@ -172,27 +167,6 @@ const AdminScreen: React.FC = () => {
                 </div>
               </div>
             ) : <p>Loading next match data...</p>}
-          </div>
-        </div>
-
-        {/* Raw JSON Editor */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-xl font-bold mb-4">Raw Data Editor</h3>
-          {loading && <p>Loading data...</p>}
-          <textarea
-            className="w-full h-96 bg-gray-100 border border-gray-300 rounded-lg p-4 font-mono text-sm"
-            value={data}
-            onChange={(e) => setData(e.target.value)}
-            disabled={loading}
-          />
-          <div className="mt-4">
-            <button
-              onClick={handleSaveJson}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
-              disabled={loading}
-            >
-              Save All Data
-            </button>
           </div>
         </div>
 
