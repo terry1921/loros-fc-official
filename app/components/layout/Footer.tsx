@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import {Facebook, Instagram, Shield, Twitter, Youtube} from 'lucide-react';
+import Image from 'next/image';
+import {Facebook, Instagram} from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -9,7 +10,7 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
-              <Shield className="text-yellow-400" size={32}/>
+              <Image src="/assets/loros_fc_shield.png" alt="Loros FC" className="object-cover" width={32} height={32} />
               <span className="text-2xl font-black italic tracking-tighter">LOROS<span
                 className="text-yellow-400">FC</span></span>
             </div>
@@ -45,8 +46,8 @@ export const Footer: React.FC = () => {
           <div>
             <h4 className="font-bold text-lg mb-6 text-white">Afición</h4>
             <ul className="space-y-3 text-emerald-400/60 text-sm">
-              <li className="hover:text-yellow-400"><Link href="#">Membresías</Link></li>
-              <li className="hover:text-yellow-400"><Link href="#">Boletos</Link></li>
+              {/*<li className="hover:text-yellow-400"><Link href="#">Membresías</Link></li>
+              <li className="hover:text-yellow-400"><Link href="#">Boletos</Link></li>*/}
               <li className="hover:text-yellow-400"><Link href="/shop">Tienda</Link></li>
               <li className="hover:text-yellow-400"><Link href="#">Wallpapers</Link></li>
             </ul>

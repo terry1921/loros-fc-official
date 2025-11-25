@@ -1,8 +1,22 @@
 import React from 'react';
-import { MOCK_DATA } from '../data/mock';
 import { PlayerCard, SectionTitle } from '../components';
+import { database } from '../lib/firebase';
+import { get, ref } from 'firebase/database';
+import {Player} from "../types";
 
-const SquadScreen: React.FC = () => {
+async function getRealtimeData() {
+  const refData = ref(database, 'data/players');
+  const snapshot = await get(refData);
+  if (snapshot.exists()) {
+    return snapshot.val();
+  } else {
+    return [];
+  }
+}
+
+const SquadScreen: React.FC = async () => {
+  const players: Player[] = await getRealtimeData();
+
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
@@ -18,12 +32,8 @@ const SquadScreen: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {MOCK_DATA.players.map((player) => (
+          {Object.values(players).map(player => (
             <PlayerCard key={player.id} player={player} />
-          ))}
-          {/* Duplicating for UI grid effect */}
-          {MOCK_DATA.players.map((player) => (
-            <PlayerCard key={`dup-${player.id}`} player={{...player, name: player.name + " (Reserva)"}} />
           ))}
         </div>
       </div>
