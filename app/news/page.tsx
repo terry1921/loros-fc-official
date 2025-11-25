@@ -5,7 +5,7 @@ import { database } from '../lib/firebase';
 import { get, ref } from 'firebase/database';
 
 async function getRealtimeData() {
-  const refData = ref(database, '/news');
+  const refData = ref(database, 'data/news');
   const snapshot = await get(refData);
   if (snapshot.exists()) {
     return snapshot.val();
