@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {Facebook, Instagram, Shield, Twitter, Youtube} from 'lucide-react';
 
 export const Footer: React.FC = () => {
@@ -9,7 +10,7 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
-              <Shield className="text-yellow-400" size={32}/>
+              <Image src="/assets/loros_fc_shield.png" alt="Loros FC" className="object-cover" width={32} height={32} />
               <span className="text-2xl font-black italic tracking-tighter">LOROS<span
                 className="text-yellow-400">FC</span></span>
             </div>
