@@ -17,11 +17,13 @@ export interface Match {
 }
 
 export interface Player {
-  id: number;
+  id: string;
   name: string;
   number: number;
   position: string;
   img: string;
+  photoUrl: string;
+  active: boolean;
 }
 
 export interface News {

@@ -5,7 +5,7 @@ import { get, ref } from 'firebase/database';
 import {Player} from "../types";
 
 async function getRealtimeData() {
-  const refData = ref(database, 'data/players');
+  const refData = ref(database, 'data/player');
   const snapshot = await get(refData);
   if (snapshot.exists()) {
     return snapshot.val();
@@ -16,6 +16,7 @@ async function getRealtimeData() {
 
 const SquadScreen: React.FC = async () => {
   const players = await getRealtimeData();
+  console.log(Array.isArray(players))
 
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">

@@ -54,6 +54,7 @@ export const Navbar: React.FC = () => {
           <CustomNavLink href="/news" label="Noticias" closeMenu={closeMenu} />
           <CustomNavLink href="/shop" label="Tienda" closeMenu={closeMenu} />
           <CustomNavLink href="/admin" label="Admin" closeMenu={closeMenu} />
+          <CustomNavLink href="/players-admin" label="Players Admin" closeMenu={closeMenu} />
           {/*<Button variant="primary" className="ml-4 text-sm">Boletos</Button>*/}
         </div>
 
@@ -71,6 +72,7 @@ export const Navbar: React.FC = () => {
           <CustomNavLink href="/news" label="Noticias" closeMenu={closeMenu} />
           <CustomNavLink href="/shop" label="Tienda" closeMenu={closeMenu} />
           <CustomNavLink href="/admin" label="Admin" closeMenu={closeMenu} />
+          <CustomNavLink href="/players-admin" label="Players Admin" closeMenu={closeMenu} />
           <Button variant="primary" className="w-full justify-center">Comprar Boletos</Button>
         </div>
       )}

@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Player } from '../types';
 import { Shield } from 'lucide-react';
 
@@ -11,6 +12,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
     <div className="relative rounded-2xl overflow-hidden group transform hover:scale-105 transition-transform duration-300 shadow-xl">
         <div className={`aspect-square w-full ${player.img} flex items-center justify-center`}>
             <Shield size={100} className="text-white/50" />
+            <Image src={player.photoUrl} alt={player.name} className="object-cover" width={100} height={100} />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
         <div className="absolute bottom-0 left-0 p-5">
