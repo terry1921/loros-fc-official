@@ -6,23 +6,13 @@ import { database } from '../lib/firebase';
 import { ref, get, set, push, remove } from 'firebase/database';
 import { SectionTitle } from '../components';
 import { Product, Category } from '../types';
-
-// Define a template for a new, empty product
-const newProductTemplate: Product = {
-  id: '',
-  name: '',
-  category: 'Playera',
-  image: '',
-  features: [],
-  url: ''
-};
+import withAuth from '../components/withAuth';
 
 const ProductsAdminScreen: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  // This state will hold the product being created or edited
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
 
   useEffect(() => {
@@ -36,9 +26,8 @@ const ProductsAdminScreen: React.FC = () => {
       const snapshot = await get(productsRef);
       if (snapshot.exists()) {
         const productsData = snapshot.val();
-        // Make sure to include the Firebase key as the product's ID
         const productsList = Object.keys(productsData).map(key => ({ ...productsData[key], id: key }));
-        setProducts(productsList as Product[]);
+        setProducts(productsList);
       } else {
         setProducts([]);
       }
@@ -56,16 +45,14 @@ const ProductsAdminScreen: React.FC = () => {
     setSuccess('');
     try {
       const productToSave = { ...activeProduct };
-      // If the product has no ID, it's a new product and we need a new key
       const productRef = productToSave.id ? ref(database, `data/products/${productToSave.id}`) : push(ref(database, 'data/products'));
+
+      const { id, ...dbProduct } = productToSave;
       
-      // Use the ref key as the ID if it's a new product
-      productToSave.id = productRef.key!;
-      
-      await set(productRef, productToSave);
+      await set(productRef, dbProduct);
       setSuccess('Product saved successfully!');
-      setActiveProduct(null); // Close the form
-      fetchProducts(); // Refresh the list
+      setActiveProduct(null);
+      fetchProducts();
     } catch (err) {
       setError('Failed to save product.');
       console.error(err);
@@ -88,7 +75,6 @@ const ProductsAdminScreen: React.FC = () => {
     }
   };
 
-  // Handler for changes in the form inputs
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setActiveProduct(prev => prev ? { ...prev, [name]: value } : null);
@@ -115,16 +101,22 @@ const ProductsAdminScreen: React.FC = () => {
     });
   };
 
-  const categories: Category[] = ['Playera', 'Sticker', 'Pin', 'Iman', 'Bumper Sticker'];
-
-  // Handlers to open the form for editing or adding
   const openEditForm = (product: Product) => {
     setActiveProduct(product);
   };
 
   const openAddForm = () => {
-    setActiveProduct(newProductTemplate);
+    setActiveProduct({
+      id: '',
+      name: '',
+      category: 'Playera',
+      image: '',
+      features: [],
+      url: ''
+    });
   };
+
+  const categories: Category[] = ['Playera', 'Sticker', 'Pin', 'Iman', 'Bumper Sticker'];
 
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
@@ -136,7 +128,6 @@ const ProductsAdminScreen: React.FC = () => {
           </Link>
         </div>
 
-        {/* Form for Adding/Editing a product */}
         {activeProduct && (
           <div className="bg-white p-6 rounded-lg shadow mb-8">
             <h3 className="text-xl font-bold mb-4">{activeProduct.id ? 'Edit Product' : 'Add New Product'}</h3>
@@ -177,7 +168,6 @@ const ProductsAdminScreen: React.FC = () => {
           </div>
         )}
 
-        {/* Product List */}
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold">Product List</h3>
@@ -216,7 +206,6 @@ const ProductsAdminScreen: React.FC = () => {
           )}
         </div>
 
-        {/* Global Notifications */}
         {error && <p className="text-red-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{error}</p>}
         {success && <p className="text-green-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{success}</p>}
       </div>
@@ -224,4 +213,4 @@ const ProductsAdminScreen: React.FC = () => {
   );
 };
 
-export default ProductsAdminScreen;
+export default withAuth(ProductsAdminScreen);

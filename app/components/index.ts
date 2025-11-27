@@ -3,3 +3,4 @@ export * from './MatchCard';
 export * from './NewsCard';
 export * from './PlayerCard';
 export * from './SectionTitle';
+export { default as withAuth } from './withAuth';

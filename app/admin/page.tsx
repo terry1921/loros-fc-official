@@ -8,6 +8,7 @@ import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { SectionTitle } from '../components';
 import { Match, Scorer } from '../types';
+import withAuth from '../components/withAuth';
 
 const AdminScreen: React.FC = () => {
   const [lastMatch, setLastMatch] = useState<Match | null>(null);
@@ -247,4 +248,4 @@ const AdminScreen: React.FC = () => {
   );
 };
 
-export default AdminScreen;
+export default withAuth(AdminScreen);

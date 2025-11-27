@@ -1,5 +1,6 @@
 export type Position = 'Portero' | 'Defensa' | 'Medio' | 'Delantero' | "Jugador";
 export type Category = 'Playera' | 'Sticker' | 'Iman' | 'Pin' | 'Bumper Sticker'
+export type NewsCategory = 'Torneo Fut 6' | 'Liga Premier'
 
 export interface Data {
   lastMatch: Match;

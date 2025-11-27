@@ -5,6 +5,7 @@ import { database } from '../lib/firebase';
 import { ref, get, set } from 'firebase/database';
 import { SectionTitle } from '../components';
 import { News } from '../types';
+import withAuth from '../components/withAuth';
 
 const generateUniqueId = () => `news_${new Date().getTime()}`;
 
@@ -42,7 +43,6 @@ const NewsAdminScreen: React.FC = () => {
     setSuccess('');
     try {
       const newsRef = ref(database, `data/news/${newsToSave.id}`);
-      // Add a timestamp for new articles
       const finalNews = newsToSave.id.startsWith('news_') 
         ? { ...newsToSave, date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) }
         : newsToSave;
@@ -50,7 +50,7 @@ const NewsAdminScreen: React.FC = () => {
       await set(newsRef, finalNews);
       setSuccess(`News article "${finalNews.title}" saved successfully!`);
       setEditingNews(null);
-      fetchNews(); // Refresh the list
+      fetchNews();
     } catch (err) {
       setError('Failed to save news article.');
       console.error(err);
@@ -65,7 +65,7 @@ const NewsAdminScreen: React.FC = () => {
       const newsRef = ref(database, `data/news/${newsId}`);
       await set(newsRef, null);
       setSuccess('News article deleted successfully!');
-      fetchNews(); // Refresh the list
+      fetchNews();
     } catch (err) {
       setError('Failed to delete news article.');
       console.error(err);
@@ -166,4 +166,4 @@ const NewsAdminScreen: React.FC = () => {
   );
 };
 
-export default NewsAdminScreen;
+export default withAuth(NewsAdminScreen);
