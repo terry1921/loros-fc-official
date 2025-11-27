@@ -1,10 +1,10 @@
 import React from 'react';
-import { ArrowRight, ShoppingBag } from 'lucide-react';
+import {ArrowRight, ShoppingBag} from 'lucide-react';
 import Link from 'next/link';
-import { Button, MatchCard, NewsCard } from './components';
-import { database } from './lib/firebase';
-import { get, ref } from 'firebase/database';
-import {News} from "./types";
+import {Button, MatchCard, NewsCard} from './components';
+import {database} from './lib/firebase';
+import {get, ref} from 'firebase/database';
+import {Data} from "./types";
 
 async function getRealtimeData() {
   const refData = ref(database, 'data');
@@ -17,8 +17,7 @@ async function getRealtimeData() {
 }
 
 const HomeScreen: React.FC = async () => {
-  const data = await getRealtimeData();
-  const news: News[] = data.news
+  const data: Data = await getRealtimeData();
 
   return (
     <>
@@ -77,7 +76,7 @@ const HomeScreen: React.FC = async () => {
               </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {Object.values(news).map((n) => (
+            {Object.values(data.news).map((n) => (
               <NewsCard key={n.id} item={n} />
             ))}
           </div>
