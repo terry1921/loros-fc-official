@@ -77,7 +77,7 @@ const NewsAdminScreen: React.FC = () => {
       id: generateUniqueId(),
       title: '',
       date: '',
-      image: '/assets/news/default.jpg',
+      image: '/assets/news/default.png',
       category: '',
       content: '',
       summary: '',
@@ -88,7 +88,7 @@ const NewsAdminScreen: React.FC = () => {
   const NewsForm = ({ newsItem, onSave }: { newsItem: News, onSave: (news: News) => void }) => {
     const [formData, setFormData] = useState(newsItem);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const { name, value, type } = e.target;
       const checked = (e.target as HTMLInputElement).checked;
       setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
@@ -109,6 +109,14 @@ const NewsAdminScreen: React.FC = () => {
             <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700">Content</label>
                 <textarea name="content" value={formData.content} onChange={handleChange} rows={6} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Category</label>
+              <select name="category" value={formData.category} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                <option></option>
+                <option>Torneo Fut 6</option>
+                <option>Liga Premier</option>
+              </select>
             </div>
             <div className="flex items-center">
                 <input type="checkbox" name="active" checked={formData.active} onChange={handleChange} className="h-4 w-4 rounded border-gray-300" />
