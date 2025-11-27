@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, Footer } from '../components/layout';
+import {Navbar} from '../components/layout';
 
 interface ShopLayoutProps {
   children: React.ReactNode;
@@ -12,7 +12,6 @@ const ShopLayout: React.FC<ShopLayoutProps> = ({ children }) => {
       <main>
         {children}
       </main>
-      <Footer />
     </div>
   );
 };

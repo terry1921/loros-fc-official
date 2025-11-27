@@ -5,6 +5,7 @@ import { database } from '../lib/firebase';
 import { ref, get, set } from 'firebase/database';
 import { SectionTitle } from '../components';
 import { Player } from '../types';
+import withAuth from '../components/withAuth';
 
 // Generate a unique ID for new players
 const generateUniqueId = () => `player_${new Date().getTime()}`;
@@ -91,7 +92,7 @@ const PlayersAdminScreen: React.FC = () => {
       position: 'Goalkeeper',
       number: 0,
       img: getPositionImg('Goalkeeper'),
-      photoUrl: '/assets/default_player.png',
+      photoUrl: '/assets/players/default.png',
       active: true,
     });
   };
@@ -186,4 +187,4 @@ const PlayersAdminScreen: React.FC = () => {
   );
 };
 
-export default PlayersAdminScreen;
+export default withAuth(PlayersAdminScreen);
