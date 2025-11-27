@@ -9,6 +9,7 @@ export interface Data {
 
 export interface Match {
   opponent: string;
+  opponentLogo?: string;
   date?: string;
   time?: string;
   stadium?: string;

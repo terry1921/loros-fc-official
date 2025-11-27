@@ -38,8 +38,7 @@ function getMatchCard(isNext: boolean, data: Match) {
               <div className="text-center">
                 <div
                   className="w-16 h-16 bg-white/20 rounded-full mx-auto mb-2 flex items-center justify-center backdrop-blur-sm">
-                  <Image src="/assets/shields/loros_fc_shield.png" alt="Loros FC" className="object-cover" width={32}
-                         height={32}/>
+                  <Image src="/assets/shields/loros.png" alt="Loros FC" className="object-cover" width={50} height={50}/>
                 </div>
                 <span className="text-white font-bold block">Loros FC</span>
               </div>
@@ -47,7 +46,11 @@ function getMatchCard(isNext: boolean, data: Match) {
               <div className="text-center">
                 <div
                   className="w-16 h-16 bg-white/10 rounded-full mx-auto mb-2 flex items-center justify-center border border-white/20">
-                  <Shield size={32} className="text-white/50"/>
+                  {data.opponentLogo ? (
+                    <Image src={data.opponentLogo} alt={data.opponent} className="object-cover" width={50} height={50}/>
+                  ) : (
+                    <Shield size={32} className="text-white/50"/>
+                  )}
                 </div>
                 <span className="text-white font-bold block opacity-80">{data.opponent}</span>
               </div>

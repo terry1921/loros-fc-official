@@ -150,6 +150,10 @@ const AdminScreen: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700">Opponent</label>
                   <input type="text" name="opponent" value={lastMatch.opponent} onChange={handleLastMatchChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" />
                 </div>
+                 <div>
+                  <label className="block text-sm font-medium text-gray-700">Opponent Logo</label>
+                  <input type="text" name="opponentLogo" value={lastMatch.opponentLogo} onChange={handleLastMatchChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" />
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Score</label>
                   <input type="text" name="score" value={lastMatch.score} onChange={handleLastMatchChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" />
@@ -204,6 +208,10 @@ const AdminScreen: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Opponent</label>
                   <input type="text" name="opponent" value={nextMatch.opponent} onChange={handleNextMatchChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Opponent Logo</label>
+                  <input type="text" name="opponentLogo" value={nextMatch.opponentLogo} onChange={handleNextMatchChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Date</label>
