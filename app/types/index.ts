@@ -1,15 +1,27 @@
-export type Position = 'Portero' | 'Defensa' | 'Medio' | 'Delantero' | undefined;
+export type Position = 'Portero' | 'Defensa' | 'Medio' | 'Delantero' | "Jugador";
 
+export interface Data {
+  lastMatch: Match;
+  nextMatch: Match;
+  news: News[];
+  players: Player[];
+}
 
 export interface Match {
   opponent: string;
+  opponentLogo?: string;
   date?: string;
   time?: string;
   stadium?: string;
   home?: boolean;
   score?: string;
   result?: 'W' | 'L' | 'D';
-  scorer?: string;
+  scorers?: Scorer[];
+}
+
+export interface Scorer {
+  name: string;
+  quantity: number;
 }
 
 export interface Player {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Footer, Navbar } from '../components/layout';
+import {Navbar} from '../components/layout';
 
 
 interface NewsLayoutProps {
@@ -13,7 +13,6 @@ const NewsLayout: React.FC<NewsLayoutProps> = ({ children }) => {
       <main>
         {children}
       </main>
-      <Footer />
     </div>
   );
 };

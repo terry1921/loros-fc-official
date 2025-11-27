@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
 import {Player, Position} from '../types';
-import {Shield} from 'lucide-react';
 
 interface PlayerCardProps {
   player: Player;
@@ -19,24 +18,23 @@ function translatePosition(position: string): Position {
     case 'Forward':
       return 'Delantero'
     default:
-      return undefined
+      return "Jugador"
   }
 }
 
 export const PlayerCard: React.FC<PlayerCardProps> = ({player}) => {
-  const position: String = translatePosition(player.position) || '';
   return (
-    <div
-      className="relative rounded-2xl overflow-hidden group transform hover:scale-105 transition-transform duration-300 shadow-xl">
-      <div className={`aspect-square w-full ${player.img} flex items-center justify-center`}>
-        <Shield size={100} className="text-white/50"/>
-        <Image src={player.photoUrl} alt={player.name} className="object-cover" width={100} height={100}/>
+    <div className="group relative overflow-hidden rounded-2xl bg-white shadow-xl hover:shadow-2xl transition-all duration-300">
+      <div className={`h-64 w-full ${player.img} flex items-end justify-center pb-4 relative overflow-hidden`}>
+        <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/80 to-transparent z-10"></div>
+        <Image src={player.photoUrl} alt={player.name} className="text-emerald-800/50 transform group-hover:scale-110 transition-transform duration-500" width={200} height={200}/>
+        <div className="absolute bottom-4 left-4 z-20 text-white">
+          <span className="text-5xl font-black text-yellow-400 opacity-90 font-mono leading-none block -mb-2">{player.number}</span>
+        </div>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-      <div className="absolute bottom-0 left-0 p-5">
-        <p className="text-4xl font-black text-white leading-none tracking-tighter opacity-50">{player.number}</p>
-        <h3 className="text-xl font-bold text-white mt-1">{player.name}</h3>
-        <p className="text-yellow-400 text-sm font-semibold">{position}</p>
+      <div className="p-4 relative z-30 bg-white">
+        <p className="text-sm font-bold text-yellow-600 uppercase tracking-wider mb-1">{translatePosition(player.position)}</p>
+        <h3 className="text-xl font-bold text-gray-800">{player.name}</h3>
       </div>
     </div>
   );
