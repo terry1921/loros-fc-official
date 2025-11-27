@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Link from 'next/link';
-import { database, auth } from '../lib/firebase';
-import { ref, get, set } from 'firebase/database';
-import { signOut } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
-import { SectionTitle } from '../components';
-import { Match, Scorer } from '../types';
+import {auth, database} from '../lib/firebase';
+import {get, ref, set} from 'firebase/database';
+import {signOut} from 'firebase/auth';
+import {useRouter} from 'next/navigation';
+import {SectionTitle} from '../components';
+import {Match} from '../types';
 import withAuth from '../components/withAuth';
 
 const AdminScreen: React.FC = () => {
