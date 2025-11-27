@@ -1,12 +1,13 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
-import { Layout } from './components/layout';
+import {Inter} from 'next/font/google';
+import {Layout} from './components/layout';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'Loros FC',
   description: 'Official website of Loros FC',
+  favicon: '/assets/shields/loros.png'
 };
 
 export default function RootLayout({
