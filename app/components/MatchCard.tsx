@@ -78,7 +78,7 @@ function getMatchCard(isNext: boolean, data: Match) {
         ) : (
           <div className={"mt-4 pt-4 border-t border-gray-100"}>
             {
-              Object.values(data.scorers || []).map((n: Scorer) => (
+              (data.scorers || []).map((n: Scorer) => (
                 <div
                   key={n.name}
                   className="text-center text-sm text-green-600 font-medium flex items-center justify-center gap-2">

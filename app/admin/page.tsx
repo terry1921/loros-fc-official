@@ -7,7 +7,7 @@ import { ref, get, set } from 'firebase/database';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { SectionTitle } from '../components';
-import { Match } from '../types';
+import { Match, Scorer } from '../types';
 
 const AdminScreen: React.FC = () => {
   const [lastMatch, setLastMatch] = useState<Match | null>(null);
@@ -25,7 +25,11 @@ const AdminScreen: React.FC = () => {
         if (snapshot.exists()) {
           const allData = snapshot.val();
           if (allData.lastMatch) {
-            setLastMatch(allData.lastMatch);
+            const matchData = allData.lastMatch;
+            if (matchData.scorers && !Array.isArray(matchData.scorers)) {
+                matchData.scorers = Object.values(matchData.scorers);
+            }
+            setLastMatch(matchData);
           }
           if (allData.nextMatch) {
             setNextMatch(allData.nextMatch);
@@ -94,6 +98,25 @@ const AdminScreen: React.FC = () => {
     });
   };
 
+  const handleScorerChange = (index: number, field: 'name' | 'quantity', value: string | number) => {
+    if (!lastMatch || !lastMatch.scorers) return;
+    const updatedScorers = [...lastMatch.scorers];
+    updatedScorers[index] = { ...updatedScorers[index], [field]: value };
+    setLastMatch({ ...lastMatch, scorers: updatedScorers });
+  };
+
+  const addScorer = () => {
+    if (!lastMatch) return;
+    const newScorers = [...(lastMatch.scorers || []), { name: '', quantity: 1 }];
+    setLastMatch({ ...lastMatch, scorers: newScorers });
+  };
+
+  const removeScorer = (index: number) => {
+    if (!lastMatch || !lastMatch.scorers) return;
+    const updatedScorers = lastMatch.scorers.filter((_, i) => i !== index);
+    setLastMatch({ ...lastMatch, scorers: updatedScorers });
+  };
+
 
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
@@ -142,6 +165,29 @@ const AdminScreen: React.FC = () => {
                 <div className="flex items-center">
                   <input type="checkbox" name="home" checked={lastMatch.home} onChange={handleLastMatchChange} className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
                   <label htmlFor="home" className="ml-2 block text-sm text-gray-900">Home Game</label>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700">Scorers</label>
+                  {(lastMatch.scorers || []).map((scorer, index) => (
+                    <div key={index} className="flex items-center gap-2 mt-2">
+                      <input
+                        type="text"
+                        placeholder="Name"
+                        value={scorer.name}
+                        onChange={(e) => handleScorerChange(index, 'name', e.target.value)}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Quantity"
+                        value={scorer.quantity}
+                        onChange={(e) => handleScorerChange(index, 'quantity', parseInt(e.target.value))}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
+                      />
+                      <button onClick={() => removeScorer(index)} className="text-red-500">Remove</button>
+                    </div>
+                  ))}
+                  <button onClick={addScorer} className="mt-2 text-emerald-600">Add Scorer</button>
                 </div>
                 <div className="md:col-span-2">
                   <button onClick={handleSaveLastMatch} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">Save Last Match</button>
