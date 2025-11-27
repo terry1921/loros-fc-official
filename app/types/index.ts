@@ -1,4 +1,5 @@
 export type Position = 'Portero' | 'Defensa' | 'Medio' | 'Delantero' | "Jugador";
+export type Category = 'Playera' | 'Sticker' | 'Iman' | 'Pin' | 'Bumper Sticker'
 
 export interface Data {
   lastMatch: Match;
@@ -43,4 +44,13 @@ export interface News {
   content: string;
   summary: string;
   active: boolean;
+}
+
+export interface Product {
+  id: string;
+  name: string,
+  category: Category,
+  image: string,
+  features: string[],
+  url: string,
 }

@@ -137,6 +137,9 @@ const AdminScreen: React.FC = () => {
                 <Link href="/news-admin" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
                     Manage News
                 </Link>
+                <Link href="/products-admin" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
+                    Manage Products
+                </Link>
             </div>
         </div>
         
