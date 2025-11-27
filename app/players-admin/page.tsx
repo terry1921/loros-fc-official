@@ -5,6 +5,7 @@ import { database } from '../lib/firebase';
 import { ref, get, set } from 'firebase/database';
 import { SectionTitle } from '../components';
 import { Player } from '../types';
+import withAuth from '../components/withAuth';
 
 // Generate a unique ID for new players
 const generateUniqueId = () => `player_${new Date().getTime()}`;
@@ -186,4 +187,4 @@ const PlayersAdminScreen: React.FC = () => {
   );
 };
 
-export default PlayersAdminScreen;
+export default withAuth(PlayersAdminScreen);

@@ -18,6 +18,8 @@ async function getRealtimeData() {
 
 const HomeScreen: React.FC = async () => {
   const data: Data = await getRealtimeData();
+  const news = Object.values(data.news)
+  news.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   return (
     <>
@@ -76,7 +78,7 @@ const HomeScreen: React.FC = async () => {
               </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {Object.values(data.news).map((n) => (
+            {news.map((n) => (
               <NewsCard key={n.id} item={n} />
             ))}
           </div>

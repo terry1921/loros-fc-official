@@ -8,6 +8,7 @@ import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { SectionTitle } from '../components';
 import { Match, Scorer } from '../types';
+import withAuth from '../components/withAuth';
 
 const AdminScreen: React.FC = () => {
   const [lastMatch, setLastMatch] = useState<Match | null>(null);
@@ -137,6 +138,9 @@ const AdminScreen: React.FC = () => {
                 <Link href="/news-admin" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
                     Manage News
                 </Link>
+                <Link href="/products-admin" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
+                    Manage Products
+                </Link>
             </div>
         </div>
         
@@ -244,4 +248,4 @@ const AdminScreen: React.FC = () => {
   );
 };
 
-export default AdminScreen;
+export default withAuth(AdminScreen);
