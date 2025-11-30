@@ -1,19 +1,12 @@
-import React from 'react';
+'use client';
+
+import React, {useEffect, useState} from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { PlayerCard, SectionTitle } from '../components';
 import { database } from '../lib/firebase';
 import { get, ref } from 'firebase/database';
 import { Player } from '../types';
-
-async function getRealtimeData(): Promise<Record<string, Player> | Player[]> {
-  const refData = ref(database, 'data/players');
-  const snapshot = await get(refData);
-  if (snapshot.exists()) {
-    return snapshot.val();
-  } else {
-    return [];
-  }
-}
 
 const filterOptions: { label: string; value?: Player['position'] }[] = [
   { label: 'Todos' },
@@ -23,17 +16,11 @@ const filterOptions: { label: string; value?: Player['position'] }[] = [
   { label: 'Delanteros', value: 'Forward' },
 ];
 
-const SquadScreen: React.FC<{ searchParams?: { position?: Player['position'] } }> = async ({ searchParams }) => {
-  const params = await searchParams;
-  const players = await getRealtimeData();
-  const selectedPosition = params?.position;
-  const playerList = Object.values(players);
-  const filteredPlayers = selectedPosition ? playerList.filter(player => player.position === selectedPosition) : playerList;
-
+function playersView(selectedPosition: string, filteredPlayers: Player[]) {
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
-        <SectionTitle title="Plantilla 2025/2026" subtitle="Conoce a los guerreros que defienden nuestros colores" />
+        <SectionTitle title="Plantilla 2025/2026" subtitle="Conoce a los guerreros que defienden nuestros colores"/>
 
         <div className="flex flex-wrap justify-center gap-4 mb-12">
           {filterOptions.map(option => {
@@ -55,12 +42,53 @@ const SquadScreen: React.FC<{ searchParams?: { position?: Player['position'] } }
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredPlayers.map(player => (
-            <PlayerCard key={player.id} player={player} />
+            <PlayerCard key={player.id} player={player}/>
           ))}
         </div>
       </div>
     </div>
   );
+}
+
+const SquadScreen: React.FC = () => {
+  const searchParams = useSearchParams();
+  const [players, setPlayers] = useState<Record<string, Player>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const selectedPosition : string = searchParams.get('position') || '';
+  const playerList = Object.values(players);
+  const filteredPlayers = selectedPosition ? playerList.filter(player => player.position === selectedPosition) : playerList;
+
+  const fetchPlayers = async () => {
+    try {
+      const playersRef = ref(database, 'data/players');
+      const snapshot = await get(playersRef);
+      if (snapshot.exists()) {
+        setPlayers(snapshot.val());
+      } else {
+        setPlayers({});
+      }
+    } catch (err) {
+      setError('Failed to fetch players.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchPlayers();
+  }, [])
+
+  if (loading) {
+    return <div className="pt-32 pb-20 min-h-screen bg-gray-50 flex justify-center items-center"><p>Loading...</p></div>;
+  }
+
+  if (error) {
+    return <div className="pt-32 pb-20 min-h-screen bg-gray-50 flex justify-center items-center"><p>{error}</p></div>;
+  }
+
+  return playersView(selectedPosition, filteredPlayers);
 };
 
 export default SquadScreen;
