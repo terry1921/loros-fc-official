@@ -103,6 +103,47 @@ const SquadPage: React.FC = () => {
       </div>
     </div>
   );
+}
+
+const SquadScreen: React.FC = () => {
+  const searchParams = useSearchParams();
+  const [players, setPlayers] = useState<Record<string, Player>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const selectedPosition : string = searchParams.get('position') || '';
+  const playerList = Object.values(players);
+  const filteredPlayers = selectedPosition ? playerList.filter(player => player.position === selectedPosition) : playerList;
+
+  const fetchPlayers = async () => {
+    try {
+      const playersRef = ref(database, 'data/players');
+      const snapshot = await get(playersRef);
+      if (snapshot.exists()) {
+        setPlayers(snapshot.val());
+      } else {
+        setPlayers({});
+      }
+    } catch (err) {
+      setError('Failed to fetch players.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchPlayers();
+  }, [])
+
+  if (loading) {
+    return <div className="pt-32 pb-20 min-h-screen bg-gray-50 flex justify-center items-center"><p>Loading...</p></div>;
+  }
+
+  if (error) {
+    return <div className="pt-32 pb-20 min-h-screen bg-gray-50 flex justify-center items-center"><p>{error}</p></div>;
+  }
+
+  return playersView(selectedPosition, filteredPlayers);
 };
 
 export default SquadPage;
