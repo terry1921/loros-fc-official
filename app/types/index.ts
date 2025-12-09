@@ -61,3 +61,9 @@ export interface Directive {
   role: string;
   photoUrl: string;
 }
+
+export interface Sponsor {
+  name: string;
+  logoUrl: string;
+  url: string;
+}

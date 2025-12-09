@@ -39,7 +39,7 @@ export const Footer: React.FC = () => {
               <li className="hover:text-yellow-400"><Link href="#">Historia</Link></li>
               <li className="hover:text-yellow-400"><Link href="/squad">Equipo</Link></li>
               <li className="hover:text-yellow-400"><Link href="/directive">Directiva</Link></li>
-              <li className="hover:text-yellow-400"><Link href="#">Patrocinadores</Link></li>
+              <li className="hover:text-yellow-400"><Link href="/sponsors">Patrocinadores</Link></li>
             </ul>
           </div>
 
@@ -73,6 +73,7 @@ export const Footer: React.FC = () => {
             <Link href="#">Privacidad</Link>
             <Link href="#">Términos</Link>
             <Link href="#">Contacto</Link>
+            <Link href="/admin">Admin</Link>
           </div>
         </div>
       </div>
