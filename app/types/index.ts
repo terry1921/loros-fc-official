@@ -55,3 +55,9 @@ export interface Product {
   features: string[],
   url: string,
 }
+
+export interface Directive {
+  name: string;
+  role: string;
+  photoUrl: string;
+}
