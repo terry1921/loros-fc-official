@@ -1,6 +1,5 @@
 import React from 'react';
-import { News } from '../types';
-import { ArrowRight } from 'lucide-react';
+import {News} from '../types';
 import Image from "next/image";
 
 interface NewsCardProps {
@@ -19,9 +18,6 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item }) => {
             <p className="text-gray-600 text-sm mb-4">{item.content}</p>
             <div className="flex justify-between items-center text-xs text-gray-400">
                 <span>{item.date}</span>
-                <span className="flex items-center gap-1 font-bold text-emerald-700 group-hover:gap-2 transition-all">
-                    Leer más <ArrowRight size={14} />
-                </span>
             </div>
         </div>
     </div>

@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../lib/firebase';
+import {useEffect} from 'react';
+import {useRouter} from 'next/navigation';
+import {useAuthState} from 'react-firebase-hooks/auth';
+import {auth} from '../lib/firebase';
 
 const withAuth = <P extends object>(WrappedComponent: React.ComponentType<P>) => {
   const WithAuthComponent: React.FC<P> = (props) => {

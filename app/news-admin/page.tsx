@@ -1,41 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { database } from '../lib/firebase';
-import { ref, get, set } from 'firebase/database';
-import { SectionTitle } from '../components';
-import { News } from '../types';
+import React, {useState} from 'react';
+import {database} from '../lib/firebase';
+import {ref, set} from 'firebase/database';
+import {SectionTitle} from '../components';
+import {News} from '../types';
 import withAuth from '../components/withAuth';
+import {useNews} from '../hooks/useNews';
 
 const generateUniqueId = () => `news_${new Date().getTime()}`;
 
 const NewsAdminScreen: React.FC = () => {
-  const [news, setNews] = useState<Record<string, News>>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { news, loading, error: newsError, refetch } = useNews();
   const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
   const [editingNews, setEditingNews] = useState<News | null>(null);
-
-  const fetchNews = async () => {
-    try {
-      const newsRef = ref(database, 'data/news');
-      const snapshot = await get(newsRef);
-      if (snapshot.exists()) {
-        setNews(snapshot.val());
-      } else {
-        setNews({});
-      }
-    } catch (err) {
-      setError('Failed to fetch news.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchNews();
-  }, []);
 
   const handleSaveNews = async (newsToSave: News) => {
     if (!newsToSave.id) return;
@@ -43,14 +22,14 @@ const NewsAdminScreen: React.FC = () => {
     setSuccess('');
     try {
       const newsRef = ref(database, `data/news/${newsToSave.id}`);
-      const finalNews = newsToSave.id.startsWith('news_') 
+      const finalNews = newsToSave.id.startsWith('news_')
         ? { ...newsToSave, date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) }
         : newsToSave;
 
       await set(newsRef, finalNews);
       setSuccess(`News article "${finalNews.title}" saved successfully!`);
       setEditingNews(null);
-      fetchNews();
+      refetch();
     } catch (err) {
       setError('Failed to save news article.');
       console.error(err);
@@ -65,7 +44,7 @@ const NewsAdminScreen: React.FC = () => {
       const newsRef = ref(database, `data/news/${newsId}`);
       await set(newsRef, null);
       setSuccess('News article deleted successfully!');
-      fetchNews();
+      refetch();
     } catch (err) {
       setError('Failed to delete news article.');
       console.error(err);
@@ -167,6 +146,7 @@ const NewsAdminScreen: React.FC = () => {
             )}
         </div>
 
+        {newsError && <p className="text-red-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{newsError}</p>}
         {error && <p className="text-red-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{error}</p>}
         {success && <p className="text-green-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{success}</p>}
       </div>
