@@ -6,4 +6,5 @@ export * from './SectionTitle';
 export * from './LastMatchForm';
 export * from './LoadingSpinner';
 export * from './FeaturedNew';
+export * from './DirectiveCard';
 export { default as withAuth } from './withAuth';
