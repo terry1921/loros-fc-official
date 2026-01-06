@@ -23,7 +23,7 @@ export const Footer: React.FC = () => {
                 <Link href={'https://www.facebook.com/profile.php?id=61583836440400'} target="_blank" rel="noopener noreferrer"><Facebook size={18}/></Link></div>
               <div
                 className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-emerald-900 transition-colors cursor-pointer">
-                <Link href={'https://www.instagram.com/lorosfcqro/'}><Instagram size={18}/></Link></div>
+                <Link href={'https://www.instagram.com/lorosfcqro/'} target="_blank" rel="noopener noreferrer"><Instagram size={18}/></Link></div>
               {/*<div
                 className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-emerald-900 transition-colors cursor-pointer">
                 <Twitter size={18}/></div>

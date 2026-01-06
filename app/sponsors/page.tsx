@@ -43,7 +43,7 @@ const SponsorsScreen: React.FC = () => {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {sponsors.map((sponsor, index) => (
-              <a href={sponsor.url} key={index} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-4 bg-gray-50 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <a href={sponsor.url} key={index} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-4 bg-cyan-900 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                 <img src={sponsor.logoUrl} alt={sponsor.name} className="max-h-24" />
               </a>
             ))}
