@@ -1,12 +1,12 @@
 'use client';
 
-import React, { Suspense, useEffect, useState } from 'react';
+import React, {Suspense} from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { PlayerCard, SectionTitle } from '../components';
-import { database } from '../lib/firebase';
-import { get, ref } from 'firebase/database';
+import {DataState, PlayerCard, SectionTitle} from '../components';
 import { Player } from '../types';
+import { CURRENT_SEASON } from '../lib/seasons';
+import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
 
 const filterOptions: { label: string; value?: Player['position'] }[] = [
   { label: 'Todos' },
@@ -16,18 +16,17 @@ const filterOptions: { label: string; value?: Player['position'] }[] = [
   { label: 'Delanteros', value: 'Forward' },
 ];
 
-function getPlayerView(loading: boolean, error: string, selectedPosition: string, filteredPlayers: Player[]) {
-
-  if (loading) {
-    return <div className="text-center"><p>Loading players...</p></div>;
-  }
-
-  if (error) {
-    return <div className="text-center text-red-500"><p>{error}</p></div>;
-  }
-
+function getPlayerView(loading: boolean, error: string, selectedPosition: string, filteredPlayers: Player[], retry: () => void) {
   return (
-    <>
+    <DataState
+      loading={loading}
+      error={error}
+      empty={filteredPlayers.length === 0}
+      loadingLabel="Cargando jugadores..."
+      emptyTitle="No hay jugadores disponibles"
+      emptyMessage={selectedPosition ? 'No hay jugadores registrados en esta posición.' : 'La plantilla se publicará próximamente.'}
+      onRetry={retry}
+    >
       <div className="flex flex-wrap justify-center gap-4 mb-12">
         {filterOptions.map(option => {
           const isActive = option.value === selectedPosition || (!option.value && !selectedPosition);
@@ -51,53 +50,28 @@ function getPlayerView(loading: boolean, error: string, selectedPosition: string
           <PlayerCard key={player.id} player={player}/>
         ))}
       </div>
-    </>
+    </DataState>
   );
 }
 
 const SquadContent: React.FC = () => {
   const searchParams = useSearchParams();
-  const [players, setPlayers] = useState<Record<string, Player>>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const {items: players, loading, error, refetch} = useFirebaseCollection<Player>(
+    'data/players',
+    'No se pudieron cargar los jugadores.',
+  );
   const selectedPosition: string = searchParams.get('position') || '';
+  const filteredPlayers = selectedPosition ? players.filter(player => player.position === selectedPosition) : players;
 
-  useEffect(() => {
-    const fetchPlayers = async () => {
-      setLoading(true);
-      try {
-        const playersRef = ref(database, 'data/players');
-        const snapshot = await get(playersRef);
-        if (snapshot.exists()) {
-          setPlayers(snapshot.val());
-        } else {
-          setPlayers({});
-        }
-      } catch (err) {
-        setError('Failed to fetch players.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPlayers();
-  }, []);
-
-  const playerList = Object.values(players);
-  const filteredPlayers = selectedPosition
-    ? playerList.filter(player => player.position === selectedPosition)
-    : playerList;
-
-  return getPlayerView(loading, error, selectedPosition, filteredPlayers);
+  return getPlayerView(loading, error, selectedPosition, filteredPlayers, () => void refetch());
 };
 
 const SquadPage: React.FC = () => {
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
-        <SectionTitle title="Plantilla 2025/2026" subtitle="Conoce a los guerreros que defienden nuestros colores" />
-        <Suspense fallback={<div className="text-center">Loading filters...</div>}>
+        <SectionTitle title={`Plantilla ${CURRENT_SEASON}`} subtitle="Conoce a los guerreros que defienden nuestros colores" />
+        <Suspense fallback={<div className="text-center" role="status">Cargando filtros...</div>}>
           <SquadContent />
         </Suspense>
       </div>

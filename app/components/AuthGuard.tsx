@@ -17,7 +17,7 @@ const AuthGuard = ({children}: { children: React.ReactNode }) => {
   }, [user, loading, router, pathname]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div role="status">Cargando...</div>;
   }
 
   if (!user && pathname.startsWith('/admin')) {

@@ -4,7 +4,7 @@ import {Calendar, MapPin, Shield} from 'lucide-react';
 import Image from "next/image";
 
 interface MatchCardProps {
-  data: Match;
+  data?: Match;
   type: 'next' | 'last';
 }
 
@@ -17,7 +17,7 @@ function noDataAvailable(isNext: boolean) {
         </h3>
       </div>
       <div className="p-6">
-        <p className="text-white text-center">No information available</p>
+        <p className="text-white text-center">Información no disponible</p>
       </div>
     </div>
   );
@@ -38,8 +38,8 @@ function getMatchCard(isNext: boolean, data: Match) {
               <div className="text-center">
                 <div
                   className="w-16 h-16 bg-white/20 rounded-full mx-auto mb-2 flex items-center justify-center backdrop-blur-sm">
-                  <Image src="/assets/shields/loros.png" alt="Loros FC" className="object-cover" width={50}
-                         height={50}/>
+                  <Image src="/assets/shields/loros.png" alt="Escudo de Loros FC" className="object-cover" width={50}
+                         height={50} sizes="50px"/>
                 </div>
                 <span className="text-white font-bold block">Loros FC</span>
               </div>
@@ -48,7 +48,7 @@ function getMatchCard(isNext: boolean, data: Match) {
                 <div
                   className="w-16 h-16 bg-white/10 rounded-full mx-auto mb-2 flex items-center justify-center border border-white/20">
                   {data.opponentLogo ? (
-                    <Image src={data.opponentLogo} alt={data.opponent} className="object-cover" width={50} height={50}/>
+                    <Image src={data.opponentLogo} alt={data.opponent} className="object-cover" width={50} height={50} sizes="50px"/>
                   ) : (
                     <Shield size={32} className="text-white/50"/>
                   )}

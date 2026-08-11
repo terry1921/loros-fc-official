@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {Match} from "../types";
 import {get, ref, set} from "firebase/database";
 import {database} from "../lib/firebase";
+import {normalizeMatch} from "../lib/firebase-data";
 
 export const useLastMatch = () => {
   const [lastMatch, setLastMatch] = useState<Match | null>(null);
@@ -10,18 +11,15 @@ export const useLastMatch = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       try {
         const dataRef = ref(database, 'data/lastMatch');
         const snapshot = await get(dataRef);
-        if (snapshot.exists()) {
-          const matchData = snapshot.val();
-          if (matchData.scorers && !Array.isArray(matchData.scorers)) {
-            matchData.scorers = Object.values(matchData.scorers);
-          }
-          setLastMatch(matchData);
-        } else {
-          setError('No last match data found. Please enter details for the new match.');
+        if (!cancelled && snapshot.exists()) {
+          setLastMatch(normalizeMatch(snapshot.val()));
+        } else if (!cancelled) {
+          setError('No se encontró información del último partido. Captura los datos del nuevo partido.');
           setLastMatch({
             opponent: '',
             opponentLogo: '',
@@ -32,13 +30,21 @@ export const useLastMatch = () => {
           });
         }
       } catch (err) {
-        setError('Failed to fetch data. ' + err);
+        if (!cancelled) {
+          setError('No se pudo cargar la información del último partido.');
+        }
+        console.error(err);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchData();
+    void fetchData();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleLastMatchChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -76,9 +82,9 @@ export const useLastMatch = () => {
     try {
       const lastMatchRef = ref(database, 'data/lastMatch');
       await set(lastMatchRef, lastMatch);
-      setSuccess('Last match data saved successfully!');
+      setSuccess('La información del último partido se guardó correctamente.');
     } catch (err) {
-      setError('Failed to save last match data. ' + err);
+      setError('No se pudo guardar la información del último partido. ' + err);
       console.error(err);
     }
   };

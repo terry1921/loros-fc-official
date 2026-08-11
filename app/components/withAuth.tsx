@@ -17,7 +17,7 @@ const withAuth = <P extends object>(WrappedComponent: React.ComponentType<P>) =>
     }, [user, loading, router]);
 
     if (loading) {
-      return <p>Loading...</p>; // Or a spinner component
+      return <p role="status">Cargando...</p>;
     }
 
     if (!user) {

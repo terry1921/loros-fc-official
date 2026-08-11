@@ -25,11 +25,11 @@ const LoginPage: React.FC = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center text-gray-900">Admin Login</h1>
+        <h1 className="text-2xl font-bold text-center text-gray-900">Acceso administrativo</h1>
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
             <label htmlFor="email" className="text-sm font-medium text-gray-700">
-              Email
+              Correo electrónico
             </label>
             <input
               id="email"
@@ -45,7 +45,7 @@ const LoginPage: React.FC = () => {
               htmlFor="password"
               className="text-sm font-medium text-gray-700"
             >
-              Password
+              Contraseña
             </label>
             <input
               id="password"
@@ -62,7 +62,7 @@ const LoginPage: React.FC = () => {
               type="submit"
               className="w-full px-4 py-2 text-sm font-medium text-white bg-emerald-600 border border-transparent rounded-md shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
             >
-              Login
+              Iniciar sesión
             </button>
           </div>
         </form>

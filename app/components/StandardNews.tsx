@@ -1,6 +1,7 @@
 import React from "react";
 import {News} from "../types";
 import Image from "next/image";
+import {getOptimizedImageSource} from "../lib/optimized-image";
 
 interface StandardNewsProps {
   news: News
@@ -9,8 +10,8 @@ interface StandardNewsProps {
 export const StandardNews: React.FC<StandardNewsProps> = ({news}) => {
   return <div className="flex gap-4 bg-white p-4 rounded-xl shadow hover:shadow-md transition-shadow">
     <div
-      className="w-32 h-32 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center bg-emerald-100">
-      <Image src={news.image} alt="Loros FC" className="object-cover" width={100} height={100}/>
+      className="relative w-32 h-32 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center bg-emerald-100">
+      <Image src={getOptimizedImageSource(news.image)} alt={`Imagen de la noticia: ${news.title}`} className="object-cover" fill sizes="128px"/>
     </div>
     <div className="flex flex-col justify-center">
       <span className="text-xs text-emerald-600 font-bold uppercase mb-1">{news.category}</span>
