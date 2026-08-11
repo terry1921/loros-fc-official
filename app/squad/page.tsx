@@ -68,14 +68,19 @@ const SquadContent: React.FC = () => {
 
 const SquadPage: React.FC = () => {
   return (
-    <div className="pt-32 pb-20 min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4">
-        <SectionTitle title={`Plantilla ${CURRENT_SEASON}`} subtitle="Conoce a los guerreros que defienden nuestros colores" />
-        <Suspense fallback={<div className="text-center" role="status">Cargando filtros...</div>}>
-          <SquadContent />
-        </Suspense>
+    <>
+      <section className="relative overflow-hidden bg-emerald-950 py-16 text-white md:py-20">
+        <div className="absolute inset-0 bg-[url('/assets/textures/carbon-fibre.svg')] opacity-20" aria-hidden="true" />
+      </section>
+      <div className="pt-16 pb-20 min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4">
+          <SectionTitle title={`Plantilla ${CURRENT_SEASON}`} subtitle="Conoce a los guerreros que defienden nuestros colores" />
+          <Suspense fallback={<div className="text-center" role="status">Cargando filtros...</div>}>
+            <SquadContent />
+          </Suspense>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

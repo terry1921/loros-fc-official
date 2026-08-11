@@ -5,7 +5,7 @@ import {News} from "../types";
 import {DataState, FeaturedNew, SectionTitle} from "../components";
 import {StandardNews} from "../components/StandardNews";
 import React, {useMemo, useState} from "react";
-import {CURRENT_SEASON, getNewsSeason, sortSeasons} from "../lib/seasons";
+import {getNewsSeason, sortSeasons} from "../lib/seasons";
 
 function loadViews(news: News[]) {
   const featuredNews = news[0];
@@ -59,45 +59,50 @@ const NewsScreen: React.FC = () => {
     : groupedNews.filter((group) => group.season === selectedSeason);
 
   return (
-    <div className="pt-32 pb-20 min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4">
-        <SectionTitle title="Noticias del Club" subtitle="Mantente informado del día a día"/>
-        <DataState
-          loading={loading}
-          error={error}
-          empty={visibleGroups.length === 0}
-          loadingLabel="Cargando noticias..."
-          emptyTitle="No hay noticias publicadas"
-          emptyMessage="Cuando publiquemos nuevas noticias del club aparecerán aquí."
-          onRetry={() => void refetch()}
-        >
-          <>
-            {seasons.length > 1 && (
-              <div className="mb-12 flex flex-wrap justify-center gap-3" aria-label="Filtrar noticias por temporada">
-                {seasons.map((season) => (
-                  <button
-                    key={season}
-                    type="button"
-                    onClick={() => setSelectedSeason(season)}
-                    aria-pressed={selectedSeason === season}
-                    className={`rounded-full px-5 py-2 text-sm font-bold transition-colors ${
-                      selectedSeason === season
-                        ? 'bg-emerald-900 text-white'
-                        : 'bg-white text-gray-600 hover:bg-emerald-50'
-                    }`}
-                  >
-                    {season === 'Todas' ? season : `Temporada ${season}`}
-                  </button>
-                ))}
-              </div>
-            )}
-            {visibleGroups.map((group) => (
-              <NewsSeasonGroup key={group.season} season={group.season} news={group.news}/>
-            ))}
-          </>
-        </DataState>
+    <>
+      <section className="relative overflow-hidden bg-emerald-950 py-16 text-white md:py-20">
+        <div className="absolute inset-0 bg-[url('/assets/textures/carbon-fibre.svg')] opacity-20" aria-hidden="true" />
+      </section>
+      <div className="pt-16 pb-20 min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4">
+          <SectionTitle title="Noticias del Club" subtitle="Mantente informado del día a día"/>
+          <DataState
+            loading={loading}
+            error={error}
+            empty={visibleGroups.length === 0}
+            loadingLabel="Cargando noticias..."
+            emptyTitle="No hay noticias publicadas"
+            emptyMessage="Cuando publiquemos nuevas noticias del club aparecerán aquí."
+            onRetry={() => void refetch()}
+          >
+            <>
+              {seasons.length > 1 && (
+                <div className="mb-12 flex flex-wrap justify-center gap-3" aria-label="Filtrar noticias por temporada">
+                  {seasons.map((season) => (
+                    <button
+                      key={season}
+                      type="button"
+                      onClick={() => setSelectedSeason(season)}
+                      aria-pressed={selectedSeason === season}
+                      className={`rounded-full px-5 py-2 text-sm font-bold transition-colors ${
+                        selectedSeason === season
+                          ? 'bg-emerald-900 text-white'
+                          : 'bg-white text-gray-600 hover:bg-emerald-50'
+                      }`}
+                    >
+                      {season === 'Todas' ? season : `Temporada ${season}`}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {visibleGroups.map((group) => (
+                <NewsSeasonGroup key={group.season} season={group.season} news={group.news}/>
+              ))}
+            </>
+          </DataState>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

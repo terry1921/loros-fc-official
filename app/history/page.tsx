@@ -28,7 +28,7 @@ const milestones = [
 
 export default function HistoryPage() {
   return (
-    <main className="min-h-screen bg-gray-50 pt-32 pb-20">
+    <main className="min-h-screen bg-gray-50 pb-20">
       <section className="relative overflow-hidden bg-emerald-950 py-20 text-white md:py-28">
         <div className="absolute inset-0 bg-[url('/assets/textures/carbon-fibre.svg')] opacity-20" aria-hidden="true" />
         <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-yellow-400/20 blur-3xl" aria-hidden="true" />

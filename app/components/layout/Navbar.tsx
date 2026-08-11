@@ -54,7 +54,6 @@ export const Navbar: React.FC = () => {
           <CustomNavLink href="/squad" label="Equipo" closeMenu={closeMenu} />
           <CustomNavLink href="/news" label="Noticias" closeMenu={closeMenu} />
           <CustomNavLink href="/shop" label="Tienda" closeMenu={closeMenu} />
-          {/*<Button variant="primary" className="ml-4 text-sm">Boletos</Button>*/}
         </div>
 
         {/* Mobile Menu Toggle */}
