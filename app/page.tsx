@@ -83,10 +83,10 @@ function getDataCards(data: Record<string, Data>) {
         El sitio oficial de Loros FC. Sigue cada jugada, conoce a nuestros jugadores y vive la intensidad desde la
         cancha.
       </p>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-        {/*<Button variant="primary">Ver Calendario</Button>*/}
-        {/*<Button variant="outline">Hacerse Socio</Button>*/}
-      </div>
+      {/*<div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+        <Button variant="primary">Ver Calendario</Button>
+        <Button variant="outline">Hacerse Socio</Button>
+      </div>*/}
     </div>
 
     {/* Dynamic Match Center Card Floating */}

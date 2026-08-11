@@ -40,6 +40,7 @@ export const Footer: React.FC = () => {
               <li className="hover:text-yellow-400"><Link href="/squad">Equipo</Link></li>
               <li className="hover:text-yellow-400"><Link href="/directive">Directiva</Link></li>
               <li className="hover:text-yellow-400"><Link href="/sponsors">Patrocinadores</Link></li>
+              <li className="hover:text-yellow-400"><a href="/media-kit/Loros_FC_Media_Kit_Patrocinios_2026.pdf" target="_blank" rel="noopener noreferrer">Media Kit 2026</a></li>
             </ul>
           </div>
 
