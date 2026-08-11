@@ -1,6 +1,7 @@
 import React from "react";
 import {News} from "../types";
 import Image from "next/image";
+import {getOptimizedImageSource} from "../lib/optimized-image";
 
 interface FeaturedNewProps {
   featuredNews: News;
@@ -24,7 +25,7 @@ export const FeaturedNew: React.FC<FeaturedNewProps> = ({featuredNews}) => {
       </p>
     </div>
     <div className="absolute inset-0 flex items-center justify-center opacity-30">
-      <Image src={featuredNews.image} alt={`Imagen de la noticia: ${featuredNews.title}`} className="object-cover" width={200} height={200}/>
+      <Image src={getOptimizedImageSource(featuredNews.image)} alt={`Imagen de la noticia: ${featuredNews.title}`} className="object-cover" fill sizes="100vw"/>
     </div>
   </div>
 }

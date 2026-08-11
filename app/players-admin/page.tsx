@@ -92,7 +92,7 @@ const PlayersAdminScreen: React.FC = () => {
       position: 'Goalkeeper',
       number: 0,
       img: getPositionImg('Goalkeeper'),
-      photoUrl: '/assets/players/default.png',
+      photoUrl: '/assets/players/default.webp',
       active: true,
     });
   };

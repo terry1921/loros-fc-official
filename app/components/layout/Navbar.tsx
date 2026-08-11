@@ -41,7 +41,7 @@ export const Navbar: React.FC = () => {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-3 cursor-pointer">
           <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-emerald-900 shadow-lg border-2 border-white">
-            <Image src="/assets/shields/loros.png" alt="Escudo de Loros FC" className="object-cover" width={34} height={34} />
+            <Image src="/assets/shields/loros.png" alt="Escudo de Loros FC" className="object-cover" width={34} height={34} sizes="34px" />
           </div>
           <span className={`text-2xl font-black tracking-tighter text-white italic`}>
             LOROS<span className="text-yellow-400">FC</span>

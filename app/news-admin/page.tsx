@@ -62,7 +62,7 @@ const NewsAdminScreen: React.FC = () => {
       title: '',
       date: '',
       season: CURRENT_SEASON,
-      image: '/assets/news/default.png',
+      image: '/assets/news/default.webp',
       category: '',
       content: '',
       summary: '',

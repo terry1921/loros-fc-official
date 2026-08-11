@@ -1,6 +1,7 @@
 import React from 'react';
 import {News} from '../types';
 import Image from "next/image";
+import {getOptimizedImageSource} from "../lib/optimized-image";
 
 interface NewsCardProps {
   item: News;
@@ -9,8 +10,8 @@ interface NewsCardProps {
 export const NewsCard: React.FC<NewsCardProps> = ({ item }) => {
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300">
-        <div className="h-48 bg-emerald-200 rounded-t-xl flex justify-center items-center">
-          <Image src={item.image} alt={`Imagen de la noticia: ${item.title}`} className="object-cover" width={150} height={150}/>
+        <div className="relative h-48 bg-emerald-200 rounded-t-xl flex justify-center items-center">
+          <Image src={getOptimizedImageSource(item.image)} alt={`Imagen de la noticia: ${item.title}`} className="object-cover" fill sizes="(min-width: 768px) 33vw, 100vw"/>
         </div>
         <div className="p-6">
             <p className="text-xs font-bold uppercase text-emerald-600 mb-2">{item.category}</p>

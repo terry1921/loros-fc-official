@@ -15,6 +15,7 @@ export const DirectiveCard: React.FC<DirectiveCardProps> = ({ name, role, photoU
         alt={`Fotografía de ${name}, ${role}`}
         width={128}
         height={128}
+        sizes="128px"
         className="rounded-full mx-auto mb-4 object-cover border-4 border-emerald-500"
       />
       <h3 className="text-xl font-bold text-emerald-900">{name}</h3>

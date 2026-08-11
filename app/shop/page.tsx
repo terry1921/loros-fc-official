@@ -51,7 +51,7 @@ const ShopScreen: React.FC = () => {
             {products.map(product => (
               <div key={product.id} className="bg-white rounded-2xl shadow-lg overflow-hidden group flex flex-col">
                 <div className="p-8 bg-gray-100 flex items-center justify-center h-64">
-                  <Image src={product.image} alt={product.name} width={200} height={200} className="group-hover:scale-105 transition-transform duration-300 object-contain h-full"/>
+                  <Image src={product.image} alt={product.name} width={200} height={200} sizes="(min-width: 1024px) 200px, 50vw" className="group-hover:scale-105 transition-transform duration-300 object-contain h-full"/>
                 </div>
                 <div className="p-6 flex-grow flex flex-col">
                   <h3 className="text-xl font-bold text-gray-900">{product.name}</h3>
