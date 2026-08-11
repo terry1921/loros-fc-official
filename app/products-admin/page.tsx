@@ -32,7 +32,7 @@ const ProductsAdminScreen: React.FC = () => {
         setProducts([]);
       }
     } catch (err) {
-      setError('Failed to fetch products.');
+      setError('No se pudieron cargar los productos.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -50,26 +50,26 @@ const ProductsAdminScreen: React.FC = () => {
       const { id, ...dbProduct } = productToSave;
       
       await set(productRef, dbProduct);
-      setSuccess('Product saved successfully!');
+      setSuccess('El producto se guardó correctamente.');
       setActiveProduct(null);
       fetchProducts();
     } catch (err) {
-      setError('Failed to save product.');
+      setError('No se pudo guardar el producto.');
       console.error(err);
     }
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm('¿Seguro que deseas eliminar este producto?')) {
       setError('');
       setSuccess('');
       try {
         const productRef = ref(database, `data/products/${id}`);
         await remove(productRef);
-        setSuccess('Product deleted successfully!');
+        setSuccess('El producto se eliminó correctamente.');
         fetchProducts();
       } catch (err) {
-        setError('Failed to delete product.');
+        setError('No se pudo eliminar el producto.');
         console.error(err);
       }
     }
@@ -122,48 +122,48 @@ const ProductsAdminScreen: React.FC = () => {
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
-          <SectionTitle title="Manage Products" subtitle="Add, edit, or delete products" />
+          <SectionTitle title="Administrar productos" subtitle="Agrega, edita o elimina productos" />
           <Link href="/admin" className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">
-            Back to Admin
+            Volver al panel
           </Link>
         </div>
 
         {activeProduct && (
           <div className="bg-white p-6 rounded-lg shadow mb-8">
-            <h3 className="text-xl font-bold mb-4">{activeProduct.id ? 'Edit Product' : 'Add New Product'}</h3>
+            <h3 className="text-xl font-bold mb-4">{activeProduct.id ? 'Editar producto' : 'Agregar producto'}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <label className="block text-sm font-medium text-gray-700">Nombre</label>
                 <input type="text" name="name" value={activeProduct.name} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Category</label>
+                <label className="block text-sm font-medium text-gray-700">Categoría</label>
                 <select name="category" value={activeProduct.category} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
                   {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Image URL</label>
+                <label className="block text-sm font-medium text-gray-700">URL de imagen</label>
                 <input type="text" name="image" value={activeProduct.image} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Product URL</label>
+                <label className="block text-sm font-medium text-gray-700">URL del producto</label>
                 <input type="text" name="url" value={activeProduct.url} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Features</label>
+                <label className="block text-sm font-medium text-gray-700">Características</label>
                 {activeProduct.features.map((feature, index) => (
                   <div key={index} className="flex items-center gap-2 mt-2">
-                    <input type="text" placeholder="Feature" value={feature} onChange={(e) => handleFeatureChange(index, e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" />
-                    <button onClick={() => removeFeature(index)} className="text-red-500">Remove</button>
+                    <input type="text" placeholder="Característica" value={feature} onChange={(e) => handleFeatureChange(index, e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" />
+                    <button onClick={() => removeFeature(index)} className="text-red-500">Eliminar</button>
                   </div>
                 ))}
-                <button onClick={addFeature} className="mt-2 text-emerald-600">Add Feature</button>
+                <button onClick={addFeature} className="mt-2 text-emerald-600">Agregar característica</button>
               </div>
             </div>
             <div className="mt-4 flex gap-4">
-              <button onClick={handleSaveProduct} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">Save Product</button>
-              <button onClick={() => setActiveProduct(null)} className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">Cancel</button>
+              <button onClick={handleSaveProduct} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">Guardar producto</button>
+              <button onClick={() => setActiveProduct(null)} className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">Cancelar</button>
             </div>
           </div>
         )}
@@ -172,11 +172,11 @@ const ProductsAdminScreen: React.FC = () => {
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold">Product List</h3>
             <button onClick={openAddForm} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
-              Add New Product
+              Agregar producto
             </button>
           </div>
           {loading ? (
-            <p>Loading products...</p>
+            <p role="status">Cargando productos...</p>
           ) : error ? (
             <p className="text-red-500">{error}</p>
           ) : (
@@ -184,9 +184,9 @@ const ProductsAdminScreen: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -195,8 +195,8 @@ const ProductsAdminScreen: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{product.category}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button onClick={() => openEditForm(product)} className="text-indigo-600 hover:text-indigo-900">Edit</button>
-                        <button onClick={() => handleDeleteProduct(product.id)} className="text-red-600 hover:text-red-900 ml-4">Delete</button>
+                        <button onClick={() => openEditForm(product)} className="text-indigo-600 hover:text-indigo-900">Editar</button>
+                        <button onClick={() => handleDeleteProduct(product.id)} className="text-red-600 hover:text-red-900 ml-4">Eliminar</button>
                       </td>
                     </tr>
                   ))}

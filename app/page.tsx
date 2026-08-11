@@ -119,7 +119,7 @@ const HomeScreen: React.FC = () => {
         setData({})
       }
     } catch (err) {
-      setError('Failed to fetch data.')
+      setError('No se pudo cargar la información.')
       console.error(err)
     } finally {
       setLoading(false)
@@ -145,7 +145,7 @@ const HomeScreen: React.FC = () => {
         {getDataCards(data)}
       </section>
 
-      {loading && <p>Loading data...</p>}
+      {loading && <p role="status">Cargando información...</p>}
 
       {/* Latest News Preview */}
       {latestNews(news)}

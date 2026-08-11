@@ -32,26 +32,26 @@ const NewsAdminScreen: React.FC = () => {
         : { ...newsToSave, season: newsToSave.season?.trim() || HISTORICAL_SEASON };
 
       await set(newsRef, finalNews);
-      setSuccess(`News article "${finalNews.title}" saved successfully!`);
+      setSuccess(`La noticia "${finalNews.title}" se guardó correctamente.`);
       setEditingNews(null);
       refetch();
     } catch (err) {
-      setError('Failed to save news article.');
+      setError('No se pudo guardar la noticia.');
       console.error(err);
     }
   };
 
   const handleDeleteNews = async (newsId: string) => {
-    if (!window.confirm("Are you sure you want to delete this news article?")) return;
+    if (!window.confirm("¿Seguro que deseas eliminar esta noticia?")) return;
     setError('');
     setSuccess('');
     try {
       const newsRef = ref(database, `data/news/${newsId}`);
       await set(newsRef, null);
-      setSuccess('News article deleted successfully!');
+      setSuccess('La noticia se eliminó correctamente.');
       refetch();
     } catch (err) {
-      setError('Failed to delete news article.');
+      setError('No se pudo eliminar la noticia.');
       console.error(err);
     }
   };
@@ -81,22 +81,22 @@ const NewsAdminScreen: React.FC = () => {
 
     return (
       <div className="bg-white p-6 rounded-lg shadow mb-8">
-        <h3 className="text-xl font-bold mb-4">{newsItem.id.startsWith('news_') ? 'Add New Article' : 'Edit Article'}</h3>
+        <h3 className="text-xl font-bold mb-4">{newsItem.id.startsWith('news_') ? 'Agregar noticia' : 'Editar noticia'}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <label className="block text-sm font-medium text-gray-700">Título</label>
                 <input type="text" name="title" value={formData.title} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
             </div>
             <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Image URL</label>
+                <label className="block text-sm font-medium text-gray-700">URL de imagen</label>
                 <input type="text" name="image" value={formData.image} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
             </div>
             <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Content</label>
+                <label className="block text-sm font-medium text-gray-700">Contenido</label>
                 <textarea name="content" value={formData.content} onChange={handleChange} rows={6} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Category</label>
+              <label className="block text-sm font-medium text-gray-700">Categoría</label>
               <select name="category" value={formData.category} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
                 <option></option>
                 <option>Torneo Fut 6</option>
@@ -118,12 +118,12 @@ const NewsAdminScreen: React.FC = () => {
             </div>
             <div className="flex items-center">
                 <input type="checkbox" name="active" checked={formData.active} onChange={handleChange} className="h-4 w-4 rounded border-gray-300" />
-                <label htmlFor="active" className="ml-2 block text-sm text-gray-900">Active</label>
+                <label htmlFor="active" className="ml-2 block text-sm text-gray-900">Activa</label>
             </div>
         </div>
         <div className="mt-6 flex justify-end gap-4">
-            <button onClick={() => setEditingNews(null)} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button>
-            <button onClick={() => onSave(formData)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">Save Article</button>
+            <button onClick={() => setEditingNews(null)} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancelar</button>
+            <button onClick={() => onSave(formData)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">Guardar noticia</button>
         </div>
       </div>
     );
@@ -132,19 +132,19 @@ const NewsAdminScreen: React.FC = () => {
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
-        <SectionTitle title="News Admin" subtitle="Manage your news articles" />
+        <SectionTitle title="Administrar noticias" subtitle="Gestiona las noticias del club" />
 
         {editingNews ? (
             <NewsForm newsItem={editingNews} onSave={handleSaveNews} />
         ) : (
             <div className="flex justify-end mb-4">
-                <button onClick={handleAddNewNews} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">+ Add New Article</button>
+                <button onClick={handleAddNewNews} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">+ Agregar noticia</button>
             </div>
         )}
 
         <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-xl font-bold mb-4">Current Articles</h3>
-            {loading ? <p>Loading articles...</p> : (
+            <h3 className="text-xl font-bold mb-4">Noticias actuales</h3>
+            {loading ? <p role="status">Cargando noticias...</p> : (
                 <div className="space-y-4">
                     {Object.values(news).reverse().map(article => (
                         <div key={article.id} className="p-4 border rounded-lg flex justify-between items-center">
@@ -153,12 +153,12 @@ const NewsAdminScreen: React.FC = () => {
                                 <p className="text-sm font-semibold text-emerald-700">Temporada {getNewsSeason(article.season)}</p>
                                 <p className="text-sm text-gray-600">{article.date}</p>
                                 <p className={`text-sm font-semibold ${article.active ? 'text-green-600' : 'text-red-600'}`}>
-                                    {article.active ? 'Active' : 'Inactive'}
+                                    {article.active ? 'Activa' : 'Inactiva'}
                                 </p>
                             </div>
                             <div className="flex gap-2 flex-shrink-0">
-                                <button onClick={() => setEditingNews(article)} className="text-blue-500 hover:underline">Edit</button>
-                                <button onClick={() => handleDeleteNews(article.id)} className="text-red-500 hover:underline">Delete</button>
+                                <button onClick={() => setEditingNews(article)} className="text-blue-500 hover:underline">Editar</button>
+                                <button onClick={() => handleDeleteNews(article.id)} className="text-red-500 hover:underline">Eliminar</button>
                             </div>
                         </div>
                     ))}

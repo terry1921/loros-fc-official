@@ -21,35 +21,35 @@ const AdminScreen: React.FC = () => {
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
-          <SectionTitle title="Admin Panel" subtitle="Manage application data"/>
+          <SectionTitle title="Panel de administración" subtitle="Gestiona la información del sitio"/>
           <button onClick={handleLogout}
                   className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
-            Logout
+            Cerrar sesión
           </button>
         </div>
 
         <div className="mb-8 bg-white p-6 rounded-lg shadow">
-          <h3 className="text-xl font-bold mb-4">Admin Sections</h3>
+          <h3 className="text-xl font-bold mb-4">Secciones de administración</h3>
           <div className="flex flex-wrap gap-4">
             <Link href="/players-admin"
                   className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
-              Manage Players
+              Gestionar jugadores
             </Link>
             <Link href="/news-admin"
                   className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
-              Manage News
+              Gestionar noticias
             </Link>
             <Link href="/products-admin"
                   className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
-              Manage Products
+              Gestionar productos
             </Link>
             <Link href="/directive-admin"
                   className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
-              Manage Directive
+              Gestionar directiva
             </Link>
             <Link href="/sponsors-admin"
                   className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
-              Manage Sponsors
+              Gestionar patrocinadores
             </Link>
           </div>
         </div>

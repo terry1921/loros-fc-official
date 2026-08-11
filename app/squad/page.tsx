@@ -20,7 +20,7 @@ const filterOptions: { label: string; value?: Player['position'] }[] = [
 function getPlayerView(loading: boolean, error: string, selectedPosition: string, filteredPlayers: Player[]) {
 
   if (loading) {
-    return <div className="text-center"><p>Loading players...</p></div>;
+    return <div className="text-center"><p role="status">Cargando jugadores...</p></div>;
   }
 
   if (error) {
@@ -75,7 +75,7 @@ const SquadContent: React.FC = () => {
           setPlayers({});
         }
       } catch (err) {
-        setError('Failed to fetch players.');
+        setError('No se pudieron cargar los jugadores.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -98,7 +98,7 @@ const SquadPage: React.FC = () => {
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
         <SectionTitle title={`Plantilla ${CURRENT_SEASON}`} subtitle="Conoce a los guerreros que defienden nuestros colores" />
-        <Suspense fallback={<div className="text-center">Loading filters...</div>}>
+        <Suspense fallback={<div className="text-center" role="status">Cargando filtros...</div>}>
           <SquadContent />
         </Suspense>
       </div>

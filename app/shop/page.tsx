@@ -22,10 +22,10 @@ const ShopScreen: React.FC = () => {
           const productsList = Object.values(productsData);
           setProducts(productsList as Product[]);
         } else {
-          setError('No products found.');
+          setError('No se encontraron productos.');
         }
       } catch (err) {
-        setError('Failed to fetch products.');
+        setError('No se pudieron cargar los productos.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -43,7 +43,7 @@ const ShopScreen: React.FC = () => {
           <p className="text-gray-600 mt-4 text-lg">Explora nuestra colección completa de artículos hechos a mano de alta calidad.</p>
         </div>
         {loading ? (
-          <p className="text-center">Cargando productos...</p>
+          <p className="text-center" role="status">Cargando productos...</p>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : (

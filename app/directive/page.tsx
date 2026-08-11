@@ -19,10 +19,10 @@ const DirectiveScreen: React.FC = () => {
         if (snapshot.exists()) {
           setDirective(Object.values(snapshot.val()));
         } else {
-          setError('No directive data found.');
+          setError('No se encontró información de la directiva.');
         }
       } catch (err) {
-        setError('Failed to fetch directive data.');
+        setError('No se pudo cargar la información de la directiva.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -37,7 +37,7 @@ const DirectiveScreen: React.FC = () => {
       <div className="container mx-auto px-4">
         <SectionTitle title="Directiva" subtitle="Conoce a nuestro equipo directivo" />
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <p className="text-center" role="status">Cargando...</p>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : (

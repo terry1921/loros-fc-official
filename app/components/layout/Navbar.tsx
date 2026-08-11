@@ -15,6 +15,7 @@ const CustomNavLink = ({ href, label, closeMenu }: { href: string, label: string
     <Link
       href={href}
       onClick={closeMenu}
+      aria-current={isActive ? 'page' : undefined}
       className={`text-sm font-bold uppercase tracking-wider hover:text-yellow-400 transition-colors ${isActive ? 'text-yellow-400' : 'text-white'}`}>
       {label}
     </Link>
@@ -36,11 +37,11 @@ export const Navbar: React.FC = () => {
   }
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-emerald-900 shadow-lg py-2' : 'bg-transparent py-6'}`}>
+    <nav aria-label="Navegación principal" className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-emerald-900 shadow-lg py-2' : 'bg-transparent py-6'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-3 cursor-pointer">
           <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-emerald-900 shadow-lg border-2 border-white">
-            <Image src="/assets/shields/loros.png" alt="Loros FC" className="object-cover" width={34} height={34} />
+            <Image src="/assets/shields/loros.png" alt="Escudo de Loros FC" className="object-cover" width={34} height={34} />
           </div>
           <span className={`text-2xl font-black tracking-tighter text-white italic`}>
             LOROS<span className="text-yellow-400">FC</span>
@@ -57,21 +58,26 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Mobile Menu Toggle */}
-        <button className="md:hidden text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+        <button
+          type="button"
+          className="md:hidden text-white"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label={isMenuOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'}
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-navigation"
+        >
+          {isMenuOpen ? <X size={28} aria-hidden="true" /> : <Menu size={28} aria-hidden="true" />}
         </button>
       </div>
 
       {/* Mobile Menu Dropdown */}
-      {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-emerald-900 border-t border-emerald-800 p-6 flex flex-col gap-6 shadow-2xl">
+      <div id="mobile-navigation" hidden={!isMenuOpen} className="md:hidden absolute top-full left-0 w-full bg-emerald-900 border-t border-emerald-800 p-6 flex flex-col gap-6 shadow-2xl">
           <CustomNavLink href="/" label="Inicio" closeMenu={closeMenu} />
           <CustomNavLink href="/squad" label="Equipo" closeMenu={closeMenu} />
           <CustomNavLink href="/news" label="Noticias" closeMenu={closeMenu} />
           <CustomNavLink href="/shop" label="Tienda" closeMenu={closeMenu} />
           {/*<Button variant="primary" className="w-full justify-center">Comprar Boletos</Button*/}
-        </div>
-      )}
+      </div>
     </nav>
   );
 };

@@ -19,10 +19,10 @@ const SponsorsScreen: React.FC = () => {
         if (snapshot.exists()) {
           setSponsors(Object.values(snapshot.val()));
         } else {
-          setError('No sponsors data found.');
+          setError('No se encontró información de patrocinadores.');
         }
       } catch (err) {
-        setError('Failed to fetch sponsors data.');
+        setError('No se pudo cargar la información de patrocinadores.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -55,7 +55,7 @@ const SponsorsScreen: React.FC = () => {
           </a>
         </div>
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <p className="text-center" role="status">Cargando...</p>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : (

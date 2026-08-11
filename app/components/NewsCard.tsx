@@ -10,7 +10,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item }) => {
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300">
         <div className="h-48 bg-emerald-200 rounded-t-xl flex justify-center items-center">
-          <Image src={item.image} alt="Loros FC" className="object-cover" width={150} height={150}/>
+          <Image src={item.image} alt={`Imagen de la noticia: ${item.title}`} className="object-cover" width={150} height={150}/>
         </div>
         <div className="p-6">
             <p className="text-xs font-bold uppercase text-emerald-600 mb-2">{item.category}</p>

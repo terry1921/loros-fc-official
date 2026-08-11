@@ -24,7 +24,7 @@ export const FeaturedNew: React.FC<FeaturedNewProps> = ({featuredNews}) => {
       </p>
     </div>
     <div className="absolute inset-0 flex items-center justify-center opacity-30">
-      <Image src={featuredNews.image} alt="Loros FC" className="object-cover" width={200} height={200}/>
+      <Image src={featuredNews.image} alt={`Imagen de la noticia: ${featuredNews.title}`} className="object-cover" width={200} height={200}/>
     </div>
   </div>
 }

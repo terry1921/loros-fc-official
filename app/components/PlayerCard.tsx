@@ -27,7 +27,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({player}) => {
       className="group relative overflow-hidden rounded-2xl bg-white shadow-xl hover:shadow-2xl transition-all duration-300">
       <div className={`h-64 w-full ${player.img} flex items-end justify-center pb-4 relative overflow-hidden`}>
         <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/80 to-transparent z-10"></div>
-        <Image src={player.photoUrl} alt={player.name}
+        <Image src={player.photoUrl} alt={`Fotografía de ${player.name}, jugador de Loros FC`}
                className="text-emerald-800/50 transform group-hover:scale-110 transition-transform duration-500"
                width={200} height={200}/>
         <div className="absolute bottom-4 left-4 z-20 text-white">

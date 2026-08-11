@@ -12,7 +12,7 @@ export const DirectiveCard: React.FC<DirectiveCardProps> = ({ name, role, photoU
     <div className="bg-white rounded-lg shadow-md p-6 text-center transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
       <Image
         src={photoUrl}
-        alt={name}
+        alt={`Fotografía de ${name}, ${role}`}
         width={128}
         height={128}
         className="rounded-full mx-auto mb-4 object-cover border-4 border-emerald-500"

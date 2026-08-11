@@ -17,7 +17,7 @@ export const useNextMatch = () => {
                 if (snapshot.exists()) {
                     setNextMatch(snapshot.val());
                 } else {
-                    setError('No next match data found. Please enter details for the new match.');
+                    setError('No se encontró información del próximo partido. Captura los datos del nuevo partido.');
                     setNextMatch({
                         opponent: '',
                         opponentLogo: '',
@@ -28,7 +28,7 @@ export const useNextMatch = () => {
                     });
                 }
             } catch (err) {
-                setError('Failed to fetch data. ' + err);
+                setError('No se pudo cargar la información. ' + err);
             } finally {
                 setLoading(false);
             }
@@ -54,9 +54,9 @@ export const useNextMatch = () => {
         try {
             const nextMatchRef = ref(database, 'data/nextMatch');
             await set(nextMatchRef, nextMatch);
-            setSuccess('Next match data saved successfully!');
+            setSuccess('La información del próximo partido se guardó correctamente.');
         } catch (err) {
-            setError('Failed to save next match data. ' + err);
+            setError('No se pudo guardar la información del próximo partido. ' + err);
             console.error(err);
         }
     };

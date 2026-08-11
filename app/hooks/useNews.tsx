@@ -19,7 +19,7 @@ export const useNews = () => {
         setNews({});
       }
     } catch (err) {
-      setError('Failed to fetch news.');
+      setError('No se pudieron cargar las noticias.');
       console.error(err);
     } finally {
       setLoading(false);
