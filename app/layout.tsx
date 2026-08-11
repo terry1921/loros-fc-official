@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'Loros FC',
-  description: 'Official website of Loros FC',
+  description: 'Sitio oficial de Loros Fútbol Club',
   favicon: '/assets/shields/loros.png'
 };
 
@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es-MX" suppressHydrationWarning>
       <body className={inter.className}>
         <Layout>{children}</Layout>
       </body>

@@ -72,9 +72,9 @@ export const Footer: React.FC = () => {
           className="border-t border-emerald-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-emerald-600">
           <p>&copy; {CURRENT_SEASON} Loros Fútbol Club. Todos los derechos reservados.</p>
           <div className="flex gap-6">
-            <Link href="#">Privacidad</Link>
-            <Link href="#">Términos</Link>
-            <Link href="#">Contacto</Link>
+            <Link href="/privacy">Privacidad</Link>
+            <Link href="/terms">Términos</Link>
+            <Link href="/contact">Contacto</Link>
             <Link href="/admin">Admin</Link>
           </div>
         </div>
