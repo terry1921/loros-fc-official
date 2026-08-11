@@ -14,7 +14,11 @@ const ShopScreen: React.FC = () => {
   );
 
   return (
-    <div className="pt-32 pb-20 bg-gray-50">
+    <>
+      <section className="relative overflow-hidden bg-emerald-950 py-16 text-white md:py-20">
+        <div className="absolute inset-0 bg-[url('/assets/textures/carbon-fibre.svg')] opacity-20" aria-hidden="true" />
+      </section>
+      <div className="pt-16 pb-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-gray-800">Todos los productos</h1>
@@ -57,6 +61,7 @@ const ShopScreen: React.FC = () => {
         </DataState>
       </div>
     </div>
+    </>
   );
 };
 

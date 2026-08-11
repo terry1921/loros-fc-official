@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import React from "react";
 
 export const metadata = {
   title: 'Aviso de Privacidad | Loros FC',
@@ -7,7 +8,11 @@ export const metadata = {
 
 const PrivacyPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 pt-32">
+    <>
+      <section className="relative overflow-hidden bg-emerald-950 py-16 text-white md:py-20">
+        <div className="absolute inset-0 bg-[url('/assets/textures/carbon-fibre.svg')] opacity-20" aria-hidden="true" />
+      </section>
+      <div className="min-h-screen bg-gray-50 pb-20 pt-32">
       <div className="container mx-auto max-w-4xl px-4">
         <article className="rounded-2xl bg-white p-6 shadow-lg md:p-10">
           <header className="mb-10 border-b border-gray-200 pb-8">
@@ -142,6 +147,7 @@ const PrivacyPage = () => {
         </article>
       </div>
     </div>
+    </>
   );
 };
 
