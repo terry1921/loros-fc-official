@@ -3,7 +3,7 @@
 import React, {useState} from 'react';
 import {database} from '../lib/firebase';
 import {ref, set} from 'firebase/database';
-import {SectionTitle} from '../components';
+import {DataState, SectionTitle} from '../components';
 import {News} from '../types';
 import withAuth from '../components/withAuth';
 import {useNews} from '../hooks/useNews';
@@ -144,9 +144,17 @@ const NewsAdminScreen: React.FC = () => {
 
         <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-xl font-bold mb-4">Noticias actuales</h3>
-            {loading ? <p role="status">Cargando noticias...</p> : (
+            <DataState
+              loading={loading}
+              error={newsError}
+              empty={news.length === 0}
+              loadingLabel="Cargando noticias..."
+              emptyTitle="No hay noticias registradas"
+              emptyMessage="Agrega la primera noticia para que aparezca en el sitio público."
+              onRetry={() => void refetch()}
+            >
                 <div className="space-y-4">
-                    {Object.values(news).reverse().map(article => (
+                    {[...news].reverse().map(article => (
                         <div key={article.id} className="p-4 border rounded-lg flex justify-between items-center">
                             <div>
                                 <p className="font-bold">{article.title}</p>
@@ -163,10 +171,9 @@ const NewsAdminScreen: React.FC = () => {
                         </div>
                     ))}
                 </div>
-            )}
+            </DataState>
         </div>
 
-        {newsError && <p className="text-red-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{newsError}</p>}
         {error && <p className="text-red-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{error}</p>}
         {success && <p className="text-green-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{success}</p>}
       </div>

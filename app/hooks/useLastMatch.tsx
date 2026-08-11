@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {Match} from "../types";
 import {get, ref, set} from "firebase/database";
 import {database} from "../lib/firebase";
+import {normalizeMatch} from "../lib/firebase-data";
 
 export const useLastMatch = () => {
   const [lastMatch, setLastMatch] = useState<Match | null>(null);
@@ -10,17 +11,14 @@ export const useLastMatch = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       try {
         const dataRef = ref(database, 'data/lastMatch');
         const snapshot = await get(dataRef);
-        if (snapshot.exists()) {
-          const matchData = snapshot.val();
-          if (matchData.scorers && !Array.isArray(matchData.scorers)) {
-            matchData.scorers = Object.values(matchData.scorers);
-          }
-          setLastMatch(matchData);
-        } else {
+        if (!cancelled && snapshot.exists()) {
+          setLastMatch(normalizeMatch(snapshot.val()));
+        } else if (!cancelled) {
           setError('No se encontró información del último partido. Captura los datos del nuevo partido.');
           setLastMatch({
             opponent: '',
@@ -32,13 +30,21 @@ export const useLastMatch = () => {
           });
         }
       } catch (err) {
-        setError('No se pudo cargar la información. ' + err);
+        if (!cancelled) {
+          setError('No se pudo cargar la información del último partido.');
+        }
+        console.error(err);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchData();
+    void fetchData();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleLastMatchChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { database } from '../lib/firebase';
 import { ref, get, set } from 'firebase/database';
-import { SectionTitle } from '../components';
+import {DataState, SectionTitle} from '../components';
 import { Sponsor } from '../types';
 import withAuth from '../components/withAuth';
 import { useRouter } from 'next/navigation';
+import {normalizeCollection} from '../lib/firebase-data';
 
 const SponsorsAdminScreen: React.FC = () => {
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
@@ -16,24 +17,30 @@ const SponsorsAdminScreen: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
+    let cancelled = false;
     const fetchSponsors = async () => {
       try {
         const sponsorsRef = ref(database, 'data/sponsors');
         const snapshot = await get(sponsorsRef);
-        if (snapshot.exists()) {
-          setSponsors(Object.values(snapshot.val()));
-        } else {
-          setError('No se encontró información de patrocinadores.');
+        if (!cancelled) {
+          setSponsors(snapshot.exists() ? normalizeCollection<Sponsor>(snapshot.val()) : []);
         }
       } catch (err) {
-        setError('No se pudo cargar la información de patrocinadores.');
+        if (!cancelled) {
+          setError('No se pudo cargar la información de patrocinadores.');
+        }
         console.error(err);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchSponsors();
+    void fetchSponsors();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleSponsorChange = (index: number, field: keyof Sponsor, value: string) => {
@@ -74,11 +81,16 @@ const SponsorsAdminScreen: React.FC = () => {
             <SectionTitle title="Administrar patrocinadores" subtitle="Actualiza los patrocinadores" />
             <button onClick={() => router.push('/admin')} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">Volver</button>
         </div>
-        {loading ? (
-          <p className="text-center" role="status">Cargando...</p>
-        ) : error ? (
-          <p className="text-center text-red-500">{error}</p>
-        ) : (
+        <DataState
+          loading={loading}
+          error={error || ''}
+          empty={sponsors.length === 0}
+          loadingLabel="Cargando patrocinadores..."
+          emptyTitle="No hay patrocinadores registrados"
+          emptyMessage="Agrega patrocinadores para mostrarlos en el sitio público."
+          emptyActionLabel="Agregar patrocinador"
+          onEmptyAction={addSponsor}
+        >
           <div className="bg-white p-6 rounded-lg shadow-md">
             {sponsors.map((sponsor, index) => (
               <div key={index} className="border-b-2 border-gray-200 pb-4 mb-4">
@@ -127,7 +139,7 @@ const SponsorsAdminScreen: React.FC = () => {
               <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Guardar cambios</button>
             </div>
           </div>
-        )}
+        </DataState>
         {success && <p className="text-green-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{success}</p>}
       </div>
     </div>

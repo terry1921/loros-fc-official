@@ -1,39 +1,17 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { database } from '../lib/firebase';
-import { ref, get } from 'firebase/database';
+import {DataState} from '../components';
 import { Product } from '../types';
+import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
 
 const ShopScreen: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const productsRef = ref(database, 'data/products');
-        const snapshot = await get(productsRef);
-        if (snapshot.exists()) {
-          const productsData = snapshot.val();
-          const productsList = Object.values(productsData);
-          setProducts(productsList as Product[]);
-        } else {
-          setError('No se encontraron productos.');
-        }
-      } catch (err) {
-        setError('No se pudieron cargar los productos.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const {items: products, loading, error, refetch} = useFirebaseCollection<Product>(
+    'data/products',
+    'No se pudieron cargar los productos.',
+  );
 
   return (
     <div className="pt-32 pb-20 bg-gray-50">
@@ -42,11 +20,15 @@ const ShopScreen: React.FC = () => {
           <h1 className="text-5xl font-bold text-gray-800">Todos los productos</h1>
           <p className="text-gray-600 mt-4 text-lg">Explora nuestra colección completa de artículos hechos a mano de alta calidad.</p>
         </div>
-        {loading ? (
-          <p className="text-center" role="status">Cargando productos...</p>
-        ) : error ? (
-          <p className="text-center text-red-500">{error}</p>
-        ) : (
+        <DataState
+          loading={loading}
+          error={error}
+          empty={products.length === 0}
+          loadingLabel="Cargando productos..."
+          emptyTitle="No hay productos disponibles"
+          emptyMessage="La tienda se actualizará próximamente."
+          onRetry={() => void refetch()}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {products.map(product => (
               <div key={product.id} className="bg-white rounded-2xl shadow-lg overflow-hidden group flex flex-col">
@@ -72,7 +54,7 @@ const ShopScreen: React.FC = () => {
               </div>
             ))}
           </div>
-        )}
+        </DataState>
       </div>
     </div>
   );

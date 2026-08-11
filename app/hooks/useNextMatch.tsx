@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {Match} from "../types";
 import {get, ref, set} from "firebase/database";
 import {database} from "../lib/firebase";
+import {normalizeMatch} from "../lib/firebase-data";
 
 export const useNextMatch = () => {
     const [nextMatch, setNextMatch] = useState<Match | null>(null);
@@ -10,13 +11,14 @@ export const useNextMatch = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        let cancelled = false;
         const fetchData = async () => {
             try {
                 const dataRef = ref(database, 'data/nextMatch');
                 const snapshot = await get(dataRef);
-                if (snapshot.exists()) {
-                    setNextMatch(snapshot.val());
-                } else {
+                if (!cancelled && snapshot.exists()) {
+                    setNextMatch(normalizeMatch(snapshot.val()));
+                } else if (!cancelled) {
                     setError('No se encontró información del próximo partido. Captura los datos del nuevo partido.');
                     setNextMatch({
                         opponent: '',
@@ -28,13 +30,21 @@ export const useNextMatch = () => {
                     });
                 }
             } catch (err) {
-                setError('No se pudo cargar la información. ' + err);
+                if (!cancelled) {
+                    setError('No se pudo cargar la información del próximo partido.');
+                }
+                console.error(err);
             } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    setLoading(false);
+                }
             }
         };
 
-        fetchData();
+        void fetchData();
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     const handleNextMatchChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

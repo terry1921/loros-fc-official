@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import { database } from '../lib/firebase';
-import { ref, get, set } from 'firebase/database';
-import { SectionTitle } from '../components';
+import {ref, set} from 'firebase/database';
+import {DataState, SectionTitle} from '../components';
 import { Player } from '../types';
 import withAuth from '../components/withAuth';
+import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
 
 // Generate a unique ID for new players
 const generateUniqueId = () => `player_${new Date().getTime()}`;
@@ -26,32 +27,13 @@ const getPositionImg = (position: string) => {
 };
 
 const PlayersAdminScreen: React.FC = () => {
-  const [players, setPlayers] = useState<Record<string, Player>>({});
-  const [loading, setLoading] = useState(true);
+  const {items: players, loading, error: fetchError, refetch} = useFirebaseCollection<Player>(
+    'data/players',
+    'No se pudieron cargar los jugadores.',
+  );
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
-
-  const fetchPlayers = async () => {
-    try {
-      const playersRef = ref(database, 'data/players');
-      const snapshot = await get(playersRef);
-      if (snapshot.exists()) {
-        setPlayers(snapshot.val());
-      } else {
-        setPlayers({});
-      }
-    } catch (err) {
-      setError('No se pudieron cargar los jugadores.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchPlayers();
-  }, []);
 
   const handleSavePlayer = async (playerToSave: Player) => {
     if (!playerToSave.id) return;
@@ -63,7 +45,7 @@ const PlayersAdminScreen: React.FC = () => {
       await set(playerRef, playerWithImg);
       setSuccess(`El jugador ${playerToSave.name} se guardó correctamente.`);
       setEditingPlayer(null);
-      fetchPlayers(); // Refresh the list
+      await refetch();
     } catch (err) {
       setError('No se pudo guardar el jugador.');
       console.error(err);
@@ -78,7 +60,7 @@ const PlayersAdminScreen: React.FC = () => {
       const playerRef = ref(database, `data/players/${playerId}`);
       await set(playerRef, null);
       setSuccess('El jugador se eliminó correctamente.');
-      fetchPlayers(); // Refresh the list
+      await refetch();
     } catch (err) {
       setError('No se pudo eliminar el jugador.');
       console.error(err);
@@ -159,9 +141,17 @@ const PlayersAdminScreen: React.FC = () => {
 
         <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-xl font-bold mb-4">Jugadores actuales</h3>
-            {loading ? <p role="status">Cargando jugadores...</p> : (
+            <DataState
+              loading={loading}
+              error={fetchError}
+              empty={players.length === 0}
+              loadingLabel="Cargando jugadores..."
+              emptyTitle="No hay jugadores registrados"
+              emptyMessage="Agrega jugadores para completar la plantilla."
+              onRetry={() => void refetch()}
+            >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Object.values(players).map(player => (
+                    {players.map(player => (
                         <div key={player.id} className="p-4 border rounded-lg flex justify-between items-center">
                             <div>
                                 <p className="font-bold">{player.name} (#{player.number})</p>
@@ -177,7 +167,7 @@ const PlayersAdminScreen: React.FC = () => {
                         </div>
                     ))}
                 </div>
-            )}
+            </DataState>
         </div>
 
         {error && <p className="text-red-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{error}</p>}

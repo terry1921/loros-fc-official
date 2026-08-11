@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { database } from '../lib/firebase';
 import { ref, get, set } from 'firebase/database';
-import { SectionTitle } from '../components';
+import {DataState, SectionTitle} from '../components';
 import { Directive } from '../types';
 import withAuth from '../components/withAuth';
 import { useRouter } from 'next/navigation';
+import {normalizeCollection} from '../lib/firebase-data';
 
 const DirectiveAdminScreen: React.FC = () => {
   const [directive, setDirective] = useState<Directive[]>([]);
@@ -16,24 +17,30 @@ const DirectiveAdminScreen: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
+    let cancelled = false;
     const fetchDirective = async () => {
       try {
         const directiveRef = ref(database, 'data/directive');
         const snapshot = await get(directiveRef);
-        if (snapshot.exists()) {
-          setDirective(Object.values(snapshot.val()));
-        } else {
-          setError('No se encontró información de la directiva.');
+        if (!cancelled) {
+          setDirective(snapshot.exists() ? normalizeCollection<Directive>(snapshot.val()) : []);
         }
       } catch (err) {
-        setError('No se pudo cargar la información de la directiva.');
+        if (!cancelled) {
+          setError('No se pudo cargar la información de la directiva.');
+        }
         console.error(err);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchDirective();
+    void fetchDirective();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleDirectiveChange = (index: number, field: keyof Directive, value: string) => {
@@ -74,11 +81,16 @@ const DirectiveAdminScreen: React.FC = () => {
             <SectionTitle title="Administrar directiva" subtitle="Actualiza el equipo directivo" />
             <button onClick={() => router.push('/admin')} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">Volver</button>
         </div>
-        {loading ? (
-          <p className="text-center" role="status">Cargando...</p>
-        ) : error ? (
-          <p className="text-center text-red-500">{error}</p>
-        ) : (
+        <DataState
+          loading={loading}
+          error={error || ''}
+          empty={directive.length === 0}
+          loadingLabel="Cargando directiva..."
+          emptyTitle="No hay integrantes registrados"
+          emptyMessage="Agrega integrantes para completar la directiva."
+          emptyActionLabel="Agregar integrante"
+          onEmptyAction={addMember}
+        >
           <div className="bg-white p-6 rounded-lg shadow-md">
             {directive.map((member, index) => (
               <div key={index} className="border-b-2 border-gray-200 pb-4 mb-4">
@@ -127,7 +139,7 @@ const DirectiveAdminScreen: React.FC = () => {
               <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Guardar cambios</button>
             </div>
           </div>
-        )}
+        </DataState>
         {success && <p className="text-green-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{success}</p>}
       </div>
     </div>

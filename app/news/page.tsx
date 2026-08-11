@@ -2,7 +2,7 @@
 
 import { useNews } from '../hooks/useNews';
 import {News} from "../types";
-import {FeaturedNew, LoadingSpinner, SectionTitle} from "../components";
+import {DataState, FeaturedNew, SectionTitle} from "../components";
 import {StandardNews} from "../components/StandardNews";
 import React, {useMemo, useState} from "react";
 import {CURRENT_SEASON, getNewsSeason, sortSeasons} from "../lib/seasons";
@@ -13,8 +13,8 @@ function loadViews(news: News[]) {
 
   return <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
     {featuredNews && <FeaturedNew featuredNews={featuredNews}/>}
-    {standardNews.map((newsItem, i) => (
-      newsItem.active && <StandardNews key={newsItem.id}  news={newsItem}/>))}
+    {standardNews.map((newsItem) => (
+      <StandardNews key={newsItem.id} news={newsItem}/>))}
   </div>;
 }
 
@@ -33,11 +33,11 @@ function NewsSeasonGroup({season, news}: {season: string; news: News[]}) {
 }
 
 const NewsScreen: React.FC = () => {
-  const { news, loading, error } = useNews();
+  const {news, loading, error, refetch} = useNews();
   const [selectedSeason, setSelectedSeason] = useState('Todas');
 
   const groupedNews = useMemo(() => {
-    const activeNews = Object.values(news)
+    const activeNews = news
       .filter((newsItem) => newsItem.active !== false)
       .sort((a, b) => b.id.localeCompare(a.id));
     const groups = new Map<string, News[]>();
@@ -62,7 +62,15 @@ const NewsScreen: React.FC = () => {
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
         <SectionTitle title="Noticias del Club" subtitle="Mantente informado del día a día"/>
-        {loading ? <LoadingSpinner/> : (
+        <DataState
+          loading={loading}
+          error={error}
+          empty={visibleGroups.length === 0}
+          loadingLabel="Cargando noticias..."
+          emptyTitle="No hay noticias publicadas"
+          emptyMessage="Cuando publiquemos nuevas noticias del club aparecerán aquí."
+          onRetry={() => void refetch()}
+        >
           <>
             {seasons.length > 1 && (
               <div className="mb-12 flex flex-wrap justify-center gap-3" aria-label="Filtrar noticias por temporada">
@@ -83,14 +91,11 @@ const NewsScreen: React.FC = () => {
                 ))}
               </div>
             )}
-            {visibleGroups.length > 0 ? visibleGroups.map((group) => (
+            {visibleGroups.map((group) => (
               <NewsSeasonGroup key={group.season} season={group.season} news={group.news}/>
-            )) : (
-              <p className="rounded-xl bg-white p-8 text-center text-gray-600">No hay noticias publicadas para esta temporada.</p>
-            )}
+            ))}
           </>
-        )}
-        {error && <p className="text-red-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{error}</p>}
+        </DataState>
       </div>
     </div>
   );

@@ -1,23 +1,15 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {useMemo} from 'react';
 import {ArrowRight, ShoppingBag} from 'lucide-react';
 import Link from 'next/link';
-import {Button, MatchCard, NewsCard} from './components';
-import {database} from './lib/firebase';
-import {get, ref} from 'firebase/database';
+import {Button, DataState, MatchCard, NewsCard} from './components';
 import {Data, News} from "./types";
 import {CURRENT_SEASON} from './lib/seasons';
+import {normalizeData} from './lib/firebase-data';
+import {useFirebaseValue} from './hooks/useFirebaseValue';
 
-async function getRealtimeData() {
-  const refData = ref(database, 'data');
-  const snapshot = await get(refData);
-  if (snapshot.exists()) {
-    return snapshot.val();
-  } else {
-    return {};
-  }
-}
+const EMPTY_DATA: Data = {};
 
 function shopSection() {
   return <section className="py-24 bg-emerald-900 relative overflow-hidden">
@@ -37,7 +29,7 @@ function shopSection() {
   </section>;
 }
 
-function latestNews(news: News[]) {
+function latestNews(news: News[], loading: boolean, error: string, retry: () => void) {
   return <section className="py-20 bg-gray-50">
     <div className="container mx-auto px-4">
       <div className="flex justify-between items-end mb-12">
@@ -52,17 +44,27 @@ function latestNews(news: News[]) {
           Ver todas <ArrowRight size={20}/>
         </Link>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {news.map((n) => (
-          <NewsCard key={n.id} item={n}/>
-        ))}
-      </div>
-      <Link
-        href="/news"
-        className="md:hidden w-full mt-8 py-3 border border-emerald-200 text-emerald-700 font-bold rounded-lg text-center"
+      <DataState
+        loading={loading}
+        error={error}
+        empty={news.length === 0}
+        loadingLabel="Cargando noticias..."
+        emptyTitle="No hay noticias publicadas"
+        emptyMessage="Las novedades del club aparecerán aquí cuando sean publicadas."
+        onRetry={retry}
       >
-        Ver todas las noticias
-      </Link>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {news.map((n) => (
+            <NewsCard key={n.id} item={n}/>
+          ))}
+        </div>
+        <Link
+          href="/news"
+          className="md:hidden w-full mt-8 py-3 border border-emerald-200 text-emerald-700 font-bold rounded-lg text-center"
+        >
+          Ver todas las noticias
+        </Link>
+      </DataState>
     </div>
   </section>;
 }
@@ -99,36 +101,16 @@ function getDataCards(data: Data) {
 }
 
 const HomeScreen: React.FC = () => {
-  const [data, setData] = useState<Data>({})
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [news, setNews] = useState<News[]>([]);
-
-  const fetchData = async () => {
-    try {
-      const refData = ref(database, 'data');
-      const snapshot = await get(refData);
-      if (snapshot.exists()) {
-        const snapshotData = snapshot.val() as Data;
-        setData(snapshotData);
-        setNews(Object.values(snapshotData.news || {})
-          .filter((newsItem) => newsItem.active !== false)
-          .reverse()
-          .slice(0, 3) as News[]);
-      } else {
-        setData({})
-      }
-    } catch (err) {
-      setError('No se pudo cargar la información.')
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, []);
+  const {value: data, loading, error, refetch} = useFirebaseValue<Data>(
+    'data',
+    normalizeData,
+    EMPTY_DATA,
+    'No se pudo cargar la información del club.',
+  );
+  const news = useMemo(() => (data.news || [])
+    .filter((newsItem) => newsItem.active !== false)
+    .sort((a, b) => b.id.localeCompare(a.id))
+    .slice(0, 3), [data.news]);
 
   return (
     <>
@@ -145,14 +127,11 @@ const HomeScreen: React.FC = () => {
         {getDataCards(data)}
       </section>
 
-      {loading && <p role="status">Cargando información...</p>}
-
       {/* Latest News Preview */}
-      {latestNews(news)}
+      {latestNews(news, loading, error, () => void refetch())}
 
       {/* CTA Shop */}
       {shopSection()}
-      {error && <p className="text-red-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{error}</p>}
     </>
   );
 };

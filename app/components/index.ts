@@ -7,4 +7,5 @@ export * from './LastMatchForm';
 export * from './LoadingSpinner';
 export * from './FeaturedNew';
 export * from './DirectiveCard';
+export * from './DataState';
 export { default as withAuth } from './withAuth';

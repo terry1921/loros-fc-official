@@ -1,36 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { database } from '../lib/firebase';
-import { ref, get } from 'firebase/database';
-import { SectionTitle } from '../components';
+import React from 'react';
+import {DataState, SectionTitle} from '../components';
 import { Sponsor } from '../types';
+import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
 
 const SponsorsScreen: React.FC = () => {
-  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchSponsors = async () => {
-      try {
-        const sponsorsRef = ref(database, 'data/sponsors');
-        const snapshot = await get(sponsorsRef);
-        if (snapshot.exists()) {
-          setSponsors(Object.values(snapshot.val()));
-        } else {
-          setError('No se encontró información de patrocinadores.');
-        }
-      } catch (err) {
-        setError('No se pudo cargar la información de patrocinadores.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSponsors();
-  }, []);
+  const {items: sponsors, loading, error, refetch} = useFirebaseCollection<Sponsor>(
+    'data/sponsors',
+    'No se pudo cargar la información de patrocinadores.',
+  );
 
   return (
     <div className="pt-32 pb-20 min-h-screen bg-white">
@@ -54,11 +33,15 @@ const SponsorsScreen: React.FC = () => {
             Ver Media Kit 2026
           </a>
         </div>
-        {loading ? (
-          <p className="text-center" role="status">Cargando...</p>
-        ) : error ? (
-          <p className="text-center text-red-500">{error}</p>
-        ) : (
+        <DataState
+          loading={loading}
+          error={error}
+          empty={sponsors.length === 0}
+          loadingLabel="Cargando patrocinadores..."
+          emptyTitle="Aún no hay patrocinadores publicados"
+          emptyMessage="Estamos preparando esta sección."
+          onRetry={() => void refetch()}
+        >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {sponsors.map((sponsor, index) => (
               <a href={sponsor.url} key={index} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-4 bg-cyan-900 rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -66,7 +49,7 @@ const SponsorsScreen: React.FC = () => {
               </a>
             ))}
           </div>
-        )}
+        </DataState>
       </div>
     </div>
   );

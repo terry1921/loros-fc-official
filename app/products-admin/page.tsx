@@ -1,43 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import Link from 'next/link';
 import { database } from '../lib/firebase';
-import { ref, get, set, push, remove } from 'firebase/database';
-import { SectionTitle } from '../components';
+import {ref, set, push, remove} from 'firebase/database';
+import {DataState, SectionTitle} from '../components';
 import { Product, Category } from '../types';
 import withAuth from '../components/withAuth';
+import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
 
 const ProductsAdminScreen: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {items: products, loading, error: fetchError, refetch} = useFirebaseCollection<Product>(
+    'data/products',
+    'No se pudieron cargar los productos.',
+  );
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const productsRef = ref(database, 'data/products');
-      const snapshot = await get(productsRef);
-      if (snapshot.exists()) {
-        const productsData = snapshot.val();
-        const productsList = Object.keys(productsData).map(key => ({ ...productsData[key], id: key }));
-        setProducts(productsList);
-      } else {
-        setProducts([]);
-      }
-    } catch (err) {
-      setError('No se pudieron cargar los productos.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSaveProduct = async () => {
     if (!activeProduct) return;
@@ -52,7 +31,7 @@ const ProductsAdminScreen: React.FC = () => {
       await set(productRef, dbProduct);
       setSuccess('El producto se guardó correctamente.');
       setActiveProduct(null);
-      fetchProducts();
+      await refetch();
     } catch (err) {
       setError('No se pudo guardar el producto.');
       console.error(err);
@@ -67,7 +46,7 @@ const ProductsAdminScreen: React.FC = () => {
         const productRef = ref(database, `data/products/${id}`);
         await remove(productRef);
         setSuccess('El producto se eliminó correctamente.');
-        fetchProducts();
+        await refetch();
       } catch (err) {
         setError('No se pudo eliminar el producto.');
         console.error(err);
@@ -170,16 +149,20 @@ const ProductsAdminScreen: React.FC = () => {
 
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold">Product List</h3>
+            <h3 className="text-xl font-bold">Lista de productos</h3>
             <button onClick={openAddForm} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">
               Agregar producto
             </button>
           </div>
-          {loading ? (
-            <p role="status">Cargando productos...</p>
-          ) : error ? (
-            <p className="text-red-500">{error}</p>
-          ) : (
+          <DataState
+            loading={loading}
+            error={fetchError}
+            empty={products.length === 0}
+            loadingLabel="Cargando productos..."
+            emptyTitle="No hay productos registrados"
+            emptyMessage="Agrega productos para que aparezcan en la tienda."
+            onRetry={() => void refetch()}
+          >
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -203,7 +186,7 @@ const ProductsAdminScreen: React.FC = () => {
                 </tbody>
               </table>
             </div>
-          )}
+          </DataState>
         </div>
 
         {error && <p className="text-red-500 mt-4 fixed bottom-4 right-4 bg-white p-4 shadow-lg rounded-lg">{error}</p>}
