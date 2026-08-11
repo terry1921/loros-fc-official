@@ -55,17 +55,6 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-bold text-lg mb-6 text-white">Newsletter</h4>
-            <p className="text-sm text-emerald-400/60 mb-4">Recibe noticias y promociones exclusivas.</p>
-            <div className="flex">
-              <input type="email" placeholder="Tu correo" aria-label="Correo electrónico para recibir noticias"
-                     className="bg-emerald-900 border-none text-white px-4 py-2 rounded-l-lg w-full focus:ring-2 focus:ring-yellow-400 outline-none text-sm"/>
-              <button
-                className="bg-yellow-400 text-emerald-900 font-bold px-4 py-2 rounded-r-lg hover:bg-yellow-300 text-sm">OK
-              </button>
-            </div>
-          </div>
         </div>
 
         <div
