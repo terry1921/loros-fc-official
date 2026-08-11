@@ -7,6 +7,7 @@ import {Button, MatchCard, NewsCard} from './components';
 import {database} from './lib/firebase';
 import {get, ref} from 'firebase/database';
 import {Data, News} from "./types";
+import {CURRENT_SEASON} from './lib/seasons';
 
 async function getRealtimeData() {
   const refData = ref(database, 'data');
@@ -26,7 +27,7 @@ function shopSection() {
       <ShoppingBag size={48} className="mx-auto text-yellow-400 mb-6"/>
       <h2 className="text-4xl md:text-5xl font-black text-white mb-6 italic">LLEVA LOS COLORES</h2>
       <p className="text-emerald-200 mb-8 max-w-2xl mx-auto text-lg">
-        El nuevo jersey oficial 2024 ya está disponible en nuestra tienda en línea. Personalízalo con tu nombre y
+        El jersey oficial de la temporada {CURRENT_SEASON} ya está disponible en nuestra tienda en línea. Personalízalo con tu nombre y
         número.
       </p>
       <Link href="/shop">
@@ -66,12 +67,12 @@ function latestNews(news: News[]) {
   </section>;
 }
 
-function getDataCards(data: Record<string, Data>) {
+function getDataCards(data: Data) {
   return <div className="container mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center">
     <div className="md:w-1/2 text-center md:text-left mb-12 md:mb-0">
             <span
               className="inline-block px-4 py-1 bg-emerald-800/50 border border-emerald-500 text-emerald-300 rounded-full text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
-              Temporada 2024/25
+              Temporada {CURRENT_SEASON}
             </span>
       <h1 className="text-5xl md:text-7xl font-black text-white leading-none mb-6 italic">
         VUELA ALTO <br/>
@@ -83,10 +84,6 @@ function getDataCards(data: Record<string, Data>) {
         El sitio oficial de Loros FC. Sigue cada jugada, conoce a nuestros jugadores y vive la intensidad desde la
         cancha.
       </p>
-      {/*<div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-        <Button variant="primary">Ver Calendario</Button>
-        <Button variant="outline">Hacerse Socio</Button>
-      </div>*/}
     </div>
 
     {/* Dynamic Match Center Card Floating */}
@@ -102,7 +99,7 @@ function getDataCards(data: Record<string, Data>) {
 }
 
 const HomeScreen: React.FC = () => {
-  const [data, setData] = useState<Record<string, Data>>({})
+  const [data, setData] = useState<Data>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [news, setNews] = useState<News[]>([]);
@@ -112,8 +109,12 @@ const HomeScreen: React.FC = () => {
       const refData = ref(database, 'data');
       const snapshot = await get(refData);
       if (snapshot.exists()) {
-        setData(snapshot.val())
-        setNews(Object.values(snapshot.val().news).reverse() as News[])
+        const snapshotData = snapshot.val() as Data;
+        setData(snapshotData);
+        setNews(Object.values(snapshotData.news || {})
+          .filter((newsItem) => newsItem.active !== false)
+          .reverse()
+          .slice(0, 3) as News[]);
       } else {
         setData({})
       }

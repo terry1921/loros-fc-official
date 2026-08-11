@@ -3,10 +3,10 @@ export type Category = 'Playera' | 'Sticker' | 'Iman' | 'Pin' | 'Bumper Sticker'
 export type NewsCategory = 'Torneo Fut 6' | 'Liga Premier' | ''
 
 export interface Data {
-  lastMatch: Match;
-  nextMatch: Match;
-  news: News[];
-  players: Player[];
+  lastMatch?: Match;
+  nextMatch?: Match;
+  news?: Record<string, News>;
+  players?: Record<string, Player>;
 }
 
 export interface Match {
@@ -40,6 +40,7 @@ export interface News {
   id: string;
   title: string;
   date: string;
+  season?: string;
   image: string;
   category: NewsCategory;
   content: string;

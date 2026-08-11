@@ -7,6 +7,7 @@ import {SectionTitle} from '../components';
 import {News} from '../types';
 import withAuth from '../components/withAuth';
 import {useNews} from '../hooks/useNews';
+import {CURRENT_SEASON, HISTORICAL_SEASON, getNewsSeason} from '../lib/seasons';
 
 const generateUniqueId = () => `news_${new Date().getTime()}`;
 
@@ -23,8 +24,12 @@ const NewsAdminScreen: React.FC = () => {
     try {
       const newsRef = ref(database, `data/news/${newsToSave.id}`);
       const finalNews = newsToSave.id.startsWith('news_')
-        ? { ...newsToSave, date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) }
-        : newsToSave;
+        ? {
+            ...newsToSave,
+            season: newsToSave.season?.trim() || CURRENT_SEASON,
+            date: new Date().toLocaleDateString('es-MX', { month: 'long', day: 'numeric', year: 'numeric' }),
+          }
+        : { ...newsToSave, season: newsToSave.season?.trim() || HISTORICAL_SEASON };
 
       await set(newsRef, finalNews);
       setSuccess(`News article "${finalNews.title}" saved successfully!`);
@@ -56,6 +61,7 @@ const NewsAdminScreen: React.FC = () => {
       id: generateUniqueId(),
       title: '',
       date: '',
+      season: CURRENT_SEASON,
       image: '/assets/news/default.png',
       category: '',
       content: '',
@@ -97,6 +103,19 @@ const NewsAdminScreen: React.FC = () => {
                 <option>Liga Premier</option>
               </select>
             </div>
+            <div>
+              <label htmlFor="season" className="block text-sm font-medium text-gray-700">Temporada</label>
+              <input
+                id="season"
+                type="text"
+                name="season"
+                value={formData.season || HISTORICAL_SEASON}
+                onChange={handleChange}
+                placeholder={CURRENT_SEASON}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"
+              />
+              <p className="mt-1 text-xs text-gray-500">Ejemplo: 2026 o 2025/26.</p>
+            </div>
             <div className="flex items-center">
                 <input type="checkbox" name="active" checked={formData.active} onChange={handleChange} className="h-4 w-4 rounded border-gray-300" />
                 <label htmlFor="active" className="ml-2 block text-sm text-gray-900">Active</label>
@@ -131,6 +150,7 @@ const NewsAdminScreen: React.FC = () => {
                         <div key={article.id} className="p-4 border rounded-lg flex justify-between items-center">
                             <div>
                                 <p className="font-bold">{article.title}</p>
+                                <p className="text-sm font-semibold text-emerald-700">Temporada {getNewsSeason(article.season)}</p>
                                 <p className="text-sm text-gray-600">{article.date}</p>
                                 <p className={`text-sm font-semibold ${article.active ? 'text-green-600' : 'text-red-600'}`}>
                                     {article.active ? 'Active' : 'Inactive'}

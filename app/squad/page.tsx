@@ -7,6 +7,7 @@ import { PlayerCard, SectionTitle } from '../components';
 import { database } from '../lib/firebase';
 import { get, ref } from 'firebase/database';
 import { Player } from '../types';
+import { CURRENT_SEASON } from '../lib/seasons';
 
 const filterOptions: { label: string; value?: Player['position'] }[] = [
   { label: 'Todos' },
@@ -96,7 +97,7 @@ const SquadPage: React.FC = () => {
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
-        <SectionTitle title="Plantilla 2025/2026" subtitle="Conoce a los guerreros que defienden nuestros colores" />
+        <SectionTitle title={`Plantilla ${CURRENT_SEASON}`} subtitle="Conoce a los guerreros que defienden nuestros colores" />
         <Suspense fallback={<div className="text-center">Loading filters...</div>}>
           <SquadContent />
         </Suspense>

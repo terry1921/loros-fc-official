@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {Facebook, Instagram} from 'lucide-react';
+import {CURRENT_SEASON} from '../../lib/seasons';
 
 export const Footer: React.FC = () => {
   return (
@@ -69,7 +70,7 @@ export const Footer: React.FC = () => {
 
         <div
           className="border-t border-emerald-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-emerald-600">
-          <p>&copy; 2024 Loros Fútbol Club. Todos los derechos reservados.</p>
+          <p>&copy; {CURRENT_SEASON} Loros Fútbol Club. Todos los derechos reservados.</p>
           <div className="flex gap-6">
             <Link href="#">Privacidad</Link>
             <Link href="#">Términos</Link>

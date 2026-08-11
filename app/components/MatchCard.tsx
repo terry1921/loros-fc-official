@@ -4,7 +4,7 @@ import {Calendar, MapPin, Shield} from 'lucide-react';
 import Image from "next/image";
 
 interface MatchCardProps {
-  data: Match;
+  data?: Match;
   type: 'next' | 'last';
 }
 
