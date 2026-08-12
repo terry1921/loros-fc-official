@@ -1,76 +1,75 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { database } from '../lib/firebase';
-import { ref, get, set } from 'firebase/database';
+import React, {useState} from 'react';
+import {database} from '../lib/firebase';
+import {ref, set} from 'firebase/database';
 import {DataState, SectionTitle} from '../components';
-import { Directive } from '../types';
+import {Directive} from '../types';
 import withAuth from '../components/withAuth';
-import { useRouter } from 'next/navigation';
-import {normalizeCollection} from '../lib/firebase-data';
+import {useRouter} from 'next/navigation';
+import {createClientStableId, toFirebaseMap} from '../lib/firebase-data';
+import {isDirective} from '../lib/validation';
+import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
 
 const DirectiveAdminScreen: React.FC = () => {
-  const [directive, setDirective] = useState<Directive[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const {items: fetchedDirective, loading: fetchLoading, error: fetchError, refetch} = useFirebaseCollection<Directive>(
+    'data/directive',
+    'No se pudo cargar la información de la directiva.',
+    {validate: isDirective},
+  );
+  const [draftDirective, setDraftDirective] = useState<Directive[] | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const router = useRouter();
 
-  useEffect(() => {
-    let cancelled = false;
-    const fetchDirective = async () => {
-      try {
-        const directiveRef = ref(database, 'data/directive');
-        const snapshot = await get(directiveRef);
-        if (!cancelled) {
-          setDirective(snapshot.exists() ? normalizeCollection<Directive>(snapshot.val()) : []);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError('No se pudo cargar la información de la directiva.');
-        }
-        console.error(err);
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    };
+  const directive = draftDirective ?? fetchedDirective;
 
-    void fetchDirective();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const handleDirectiveChange = (index: number, field: keyof Directive, value: string) => {
-    const updatedDirective = [...directive];
-    updatedDirective[index] = { ...updatedDirective[index], [field]: value };
-    setDirective(updatedDirective);
+  const handleDirectiveChange = (id: string, field: keyof Omit<Directive, 'id'>, value: string) => {
+    setDraftDirective((currentDirective) => {
+      const source = currentDirective ?? fetchedDirective;
+      return source.map((member) => (
+        member.id === id ? {...member, [field]: value} : member
+      ));
+    });
   };
 
   const addMember = () => {
-    setDirective([...directive, { name: '', role: '', photoUrl: '' }]);
+    setDraftDirective((currentDirective) => [
+      ...(currentDirective ?? fetchedDirective),
+      {id: createClientStableId('directive'), name: '', role: '', photoUrl: ''},
+    ]);
   };
 
-  const removeMember = (index: number) => {
-    const updatedDirective = directive.filter((_, i) => i !== index);
-    setDirective(updatedDirective);
+  const removeMember = (id: string) => {
+    setDraftDirective((currentDirective) => (
+      (currentDirective ?? fetchedDirective).filter((member) => member.id !== id)
+    ));
   };
 
   const handleSave = async () => {
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
+    setSaving(true);
+    setError('');
+    setSuccess('');
+
+    const validDirective = directive.filter(isDirective);
+    if (validDirective.length !== directive.length) {
+      setError('Revisa que cada integrante tenga nombre, cargo y una fotografía válida antes de guardar.');
+      setSaving(false);
+      return;
+    }
+
     try {
       const directiveRef = ref(database, 'data/directive');
-      await set(directiveRef, directive);
+      await set(directiveRef, toFirebaseMap(validDirective));
       setSuccess('La información de la directiva se guardó correctamente.');
+      setDraftDirective(null);
+      await refetch();
     } catch (err) {
       setError('No se pudo guardar la información de la directiva.');
       console.error(err);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
@@ -78,12 +77,12 @@ const DirectiveAdminScreen: React.FC = () => {
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
-            <SectionTitle title="Administrar directiva" subtitle="Actualiza el equipo directivo" />
-            <button onClick={() => router.push('/admin')} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">Volver</button>
+          <SectionTitle title="Administrar directiva" subtitle="Actualiza el equipo directivo" />
+          <button onClick={() => router.push('/admin')} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">Volver</button>
         </div>
         <DataState
-          loading={loading}
-          error={error || ''}
+          loading={fetchLoading && directive.length === 0}
+          error={error || fetchError}
           empty={directive.length === 0}
           loadingLabel="Cargando directiva..."
           emptyTitle="No hay integrantes registrados"
@@ -92,51 +91,53 @@ const DirectiveAdminScreen: React.FC = () => {
           onEmptyAction={addMember}
         >
           <div className="bg-white p-6 rounded-lg shadow-md">
-            {directive.map((member, index) => (
-              <div key={index} className="border-b-2 border-gray-200 pb-4 mb-4">
+            {directive.map((member) => (
+              <div key={member.id} className="border-b-2 border-gray-200 pb-4 mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label htmlFor={`name-${index}`} className="block text-sm font-medium text-gray-700">Nombre</label>
+                    <label htmlFor={`name-${member.id}`} className="block text-sm font-medium text-gray-700">Nombre</label>
                     <input
                       type="text"
-                      id={`name-${index}`}
+                      id={`name-${member.id}`}
                       placeholder="Nombre"
                       value={member.name}
-                      onChange={(e) => handleDirectiveChange(index, 'name', e.target.value)}
+                      onChange={(e) => handleDirectiveChange(member.id, 'name', e.target.value)}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
                     />
                   </div>
                   <div>
-                    <label htmlFor={`role-${index}`} className="block text-sm font-medium text-gray-700">Cargo</label>
+                    <label htmlFor={`role-${member.id}`} className="block text-sm font-medium text-gray-700">Cargo</label>
                     <input
                       type="text"
-                      id={`role-${index}`}
+                      id={`role-${member.id}`}
                       placeholder="Cargo"
                       value={member.role}
-                      onChange={(e) => handleDirectiveChange(index, 'role', e.target.value)}
+                      onChange={(e) => handleDirectiveChange(member.id, 'role', e.target.value)}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
                     />
                   </div>
                   <div>
-                    <label htmlFor={`photoUrl-${index}`} className="block text-sm font-medium text-gray-700">URL de fotografía</label>
+                    <label htmlFor={`photoUrl-${member.id}`} className="block text-sm font-medium text-gray-700">URL de fotografía</label>
                     <input
                       type="text"
-                      id={`photoUrl-${index}`}
+                      id={`photoUrl-${member.id}`}
                       placeholder="URL de fotografía"
                       value={member.photoUrl}
-                      onChange={(e) => handleDirectiveChange(index, 'photoUrl', e.target.value)}
+                      onChange={(e) => handleDirectiveChange(member.id, 'photoUrl', e.target.value)}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"
                     />
                   </div>
                 </div>
                 <div className="flex justify-end mt-4">
-                  <button onClick={() => removeMember(index)} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Eliminar</button>
+                  <button onClick={() => removeMember(member.id)} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Eliminar</button>
                 </div>
               </div>
             ))}
             <div className="flex justify-between items-center mt-6">
               <button onClick={addMember} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">Agregar integrante</button>
-              <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Guardar cambios</button>
+              <button onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold py-2 px-4 rounded-lg">
+                {saving ? 'Guardando...' : 'Guardar cambios'}
+              </button>
             </div>
           </div>
         </DataState>

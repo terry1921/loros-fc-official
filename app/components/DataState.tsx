@@ -44,7 +44,7 @@ export const DataState: React.FC<DataStateProps> = ({
 }) => {
   if (loading) {
     return (
-      <div aria-busy="true">
+      <div aria-busy="true" aria-live="polite">
         <Skeleton />
         <p className="mt-4 text-center text-sm text-gray-500" role="status">{loadingLabel}</p>
       </div>

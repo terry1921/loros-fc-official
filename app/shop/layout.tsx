@@ -1,19 +1,14 @@
-import React from 'react';
-import {Navbar} from '../components/layout';
+import type {ReactNode} from 'react';
 
 interface ShopLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const ShopLayout: React.FC<ShopLayoutProps> = ({ children }) => {
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
-      <Navbar />
-      <main>
-        {children}
-      </main>
-    </div>
-  );
+export const metadata = {
+  title: 'Tienda oficial',
+  description: 'Productos oficiales de Loros Fútbol Club para la afición.',
 };
+
+const ShopLayout = ({children}: ShopLayoutProps) => children;
 
 export default ShopLayout;

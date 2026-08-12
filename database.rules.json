@@ -1,0 +1,213 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "data": {
+      ".read": false,
+      ".write": false,
+      "$other": {
+        ".validate": false
+      },
+      "lastMatch": {
+        ".read": true,
+        ".write": "auth != null && auth.token.admin == true",
+        ".validate": "newData.hasChildren(['opponent', 'score', 'result', 'home'])",
+        "$other": {
+          ".validate": false
+        },
+        "opponent": {
+          ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 120"
+        },
+        "opponentLogo": {
+          ".validate": "!newData.exists() || (newData.isString() && (newData.val() == '' || newData.val().matches(/^(\\/assets\\/|https:\\/\\/).+/)) && newData.val().length <= 500)"
+        },
+        "score": {
+          ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 30"
+        },
+        "result": {
+          ".validate": "newData.isString() && (newData.val() == 'W' || newData.val() == 'L' || newData.val() == 'D')"
+        },
+        "home": {
+          ".validate": "newData.isBoolean()"
+        },
+          "scorers": {
+          ".validate": "!newData.exists() || newData.hasChildren()",
+          "$scorerId": {
+            ".validate": "newData.hasChildren(['name', 'quantity'])",
+            "$other": {
+              ".validate": false
+            },
+            "name": {
+              ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 120"
+            },
+            "quantity": {
+              ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 20"
+            }
+          }
+        }
+      },
+      "nextMatch": {
+        ".read": true,
+        ".write": "auth != null && auth.token.admin == true",
+        ".validate": "newData.hasChildren(['opponent', 'date', 'time', 'stadium', 'home'])",
+        "$other": {
+          ".validate": false
+        },
+        "opponent": {
+          ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 120"
+        },
+        "opponentLogo": {
+          ".validate": "!newData.exists() || (newData.isString() && (newData.val() == '' || newData.val().matches(/^(\\/assets\\/|https:\\/\\/).+/)) && newData.val().length <= 500)"
+        },
+        "date": {
+          ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 80"
+        },
+        "time": {
+          ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 40"
+        },
+        "stadium": {
+          ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 160"
+        },
+        "home": {
+          ".validate": "newData.isBoolean()"
+        }
+      },
+      "news": {
+        ".read": true,
+        ".write": "auth != null && auth.token.admin == true",
+        "$newsId": {
+          ".validate": "newData.hasChildren(['id', 'title', 'date', 'season', 'image', 'category', 'content', 'active']) && newData.child('id').val() == $newsId",
+          "$other": {
+            ".validate": false
+          },
+          "id": {
+            ".validate": "newData.isString() && newData.val() == $newsId && newData.val().matches(/^[A-Za-z0-9_-]+$/) && newData.val().length <= 120"
+          },
+          "title": {
+            ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 180"
+          },
+          "date": {
+            ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 80"
+          },
+          "season": {
+            ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 30"
+          },
+          "image": {
+            ".validate": "newData.isString() && newData.val().matches(/^(\\/assets\\/|https:\\/\\/).+/) && newData.val().length <= 500"
+          },
+          "category": {
+            ".validate": "newData.isString() && (newData.val() == '' || newData.val() == 'Torneo Fut 6' || newData.val() == 'Liga Premier')"
+          },
+          "content": {
+            ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 5000"
+          },
+          "summary": {
+            ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 280"
+          },
+          "active": {
+            ".validate": "newData.isBoolean()"
+          }
+        }
+      },
+      "players": {
+        ".read": true,
+        ".write": "auth != null && auth.token.admin == true",
+        "$playerId": {
+          ".validate": "newData.hasChildren(['id', 'name', 'number', 'position', 'img', 'photoUrl', 'active']) && newData.child('id').val() == $playerId",
+          "$other": {
+            ".validate": false
+          },
+          "id": {
+            ".validate": "newData.isString() && newData.val() == $playerId && newData.val().matches(/^[A-Za-z0-9_-]+$/) && newData.val().length <= 120"
+          },
+          "name": {
+            ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 120"
+          },
+          "number": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999"
+          },
+          "position": {
+            ".validate": "newData.isString() && (newData.val() == 'Goalkeeper' || newData.val() == 'Defender' || newData.val() == 'Midfielder' || newData.val() == 'Forward' || newData.val() == 'Portero' || newData.val() == 'Defensa' || newData.val() == 'Medio' || newData.val() == 'Delantero' || newData.val() == 'Jugador')"
+          },
+          "img": {
+            ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 80"
+          },
+          "photoUrl": {
+            ".validate": "newData.isString() && newData.val().matches(/^(\\/assets\\/|https:\\/\\/).+/) && newData.val().length <= 500"
+          },
+          "active": {
+            ".validate": "newData.isBoolean()"
+          }
+        }
+      },
+      "products": {
+        ".read": true,
+        ".write": "auth != null && auth.token.admin == true",
+        "$productId": {
+          ".validate": "newData.hasChildren(['name', 'category', 'image', 'features', 'url']) && !newData.child('id').exists()",
+          "$other": {
+            ".validate": false
+          },
+          "name": {
+            ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 160"
+          },
+          "category": {
+            ".validate": "newData.isString() && (newData.val() == 'Playera' || newData.val() == 'Sticker' || newData.val() == 'Iman' || newData.val() == 'Pin' || newData.val() == 'Bumper Sticker')"
+          },
+          "image": {
+            ".validate": "newData.isString() && newData.val().matches(/^(\\/assets\\/|https:\\/\\/).+/) && newData.val().length <= 500"
+          },
+          "features": {
+            ".validate": "newData.exists()",
+            "$featureId": {
+              ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 160"
+            }
+          },
+          "url": {
+            ".validate": "newData.isString() && newData.val().matches(/^https:\\/\\/.+/) && newData.val().length <= 500"
+          }
+        }
+      },
+      "sponsors": {
+        ".read": true,
+        ".write": "auth != null && auth.token.admin == true",
+        ".validate": "newData.hasChildren()",
+        "$sponsorId": {
+          ".validate": "newData.hasChildren(['name', 'logoUrl', 'url'])",
+          "$other": {
+            ".validate": false
+          },
+          "name": {
+            ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 160"
+          },
+          "logoUrl": {
+            ".validate": "newData.isString() && newData.val().matches(/^(\\/assets\\/|https:\\/\\/).+/) && newData.val().length <= 500"
+          },
+          "url": {
+            ".validate": "newData.isString() && newData.val().matches(/^https:\\/\\/.+/) && newData.val().length <= 500"
+          }
+        }
+      },
+      "directive": {
+        ".read": true,
+        ".write": "auth != null && auth.token.admin == true",
+        ".validate": "newData.hasChildren()",
+        "$memberId": {
+          ".validate": "newData.hasChildren(['name', 'role', 'photoUrl'])",
+          "$other": {
+            ".validate": false
+          },
+          "name": {
+            ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 160"
+          },
+          "role": {
+            ".validate": "newData.isString() && newData.val().matches(/^.*\\S.*$/) && newData.val().length <= 160"
+          },
+          "photoUrl": {
+            ".validate": "newData.isString() && newData.val().matches(/^(\\/assets\\/|https:\\/\\/).+/) && newData.val().length <= 500"
+          }
+        }
+      }
+    }
+  }
+}

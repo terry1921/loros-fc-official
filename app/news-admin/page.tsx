@@ -6,13 +6,92 @@ import {ref, set} from 'firebase/database';
 import {DataState, SectionTitle} from '../components';
 import {News} from '../types';
 import withAuth from '../components/withAuth';
-import {useNews} from '../hooks/useNews';
+import {createClientStableId} from '../lib/firebase-data';
+import {isNews} from '../lib/validation';
+import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
 import {CURRENT_SEASON, HISTORICAL_SEASON, getNewsSeason} from '../lib/seasons';
 
-const generateUniqueId = () => `news_${new Date().getTime()}`;
+const generateUniqueId = () => createClientStableId('news');
+
+function isNewNewsId(id: string) {
+  return id.startsWith('news-') || id.startsWith('news_');
+}
+
+type NewsFormProps = {
+  newsItem: News;
+  onCancel: () => void;
+  onSave: (news: News) => void;
+};
+
+function NewsForm({newsItem, onCancel, onSave}: Readonly<NewsFormProps>) {
+  const [formData, setFormData] = useState(newsItem);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const {name, value, type} = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    setFormData((prev) => ({...prev, [name]: type === 'checkbox' ? checked : value}));
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow mb-8">
+      <h3 className="text-xl font-bold mb-4">{isNewNewsId(newsItem.id) ? 'Agregar noticia' : 'Editar noticia'}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Título</label>
+              <input type="text" name="title" value={formData.title} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
+          </div>
+          <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">URL de imagen</label>
+              <input type="text" name="image" value={formData.image} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
+          </div>
+          <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Contenido</label>
+              <textarea name="content" value={formData.content} onChange={handleChange} rows={6} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
+          </div>
+          <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Resumen</label>
+              <textarea name="summary" value={formData.summary} onChange={handleChange} rows={3} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700">Categoría</label>
+            <select name="category" value={formData.category} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+              <option></option>
+              <option>Torneo Fut 6</option>
+              <option>Liga Premier</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="season" className="block text-sm font-medium text-gray-700">Temporada</label>
+            <input
+              id="season"
+              type="text"
+              name="season"
+              value={formData.season || HISTORICAL_SEASON}
+              onChange={handleChange}
+              placeholder={CURRENT_SEASON}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"
+            />
+            <p className="mt-1 text-xs text-gray-500">Ejemplo: 2026 o 2025/26 o Copa 2026.</p>
+          </div>
+          <div className="flex items-center">
+              <input type="checkbox" name="active" checked={formData.active} onChange={handleChange} className="h-4 w-4 rounded border-gray-300" />
+              <label htmlFor="active" className="ml-2 block text-sm text-gray-900">Activa</label>
+          </div>
+      </div>
+      <div className="mt-6 flex justify-end gap-4">
+          <button onClick={onCancel} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancelar</button>
+          <button onClick={() => onSave(formData)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">Guardar noticia</button>
+      </div>
+    </div>
+  );
+}
 
 const NewsAdminScreen: React.FC = () => {
-  const { news, loading, error: newsError, refetch } = useNews();
+  const {items: news, loading, error: newsError, refetch} = useFirebaseCollection<News>(
+    'data/news',
+    'No se pudieron cargar las noticias.',
+    {validate: isNews},
+  );
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [editingNews, setEditingNews] = useState<News | null>(null);
@@ -23,18 +102,23 @@ const NewsAdminScreen: React.FC = () => {
     setSuccess('');
     try {
       const newsRef = ref(database, `data/news/${newsToSave.id}`);
-      const finalNews = newsToSave.id.startsWith('news_')
+      const finalNews = isNewNewsId(newsToSave.id)
         ? {
             ...newsToSave,
             season: newsToSave.season?.trim() || CURRENT_SEASON,
-            date: new Date().toLocaleDateString('es-MX', { month: 'long', day: 'numeric', year: 'numeric' }),
+            date: new Date().toLocaleDateString('es-MX', {month: 'long', day: 'numeric', year: 'numeric'}),
           }
-        : { ...newsToSave, season: newsToSave.season?.trim() || HISTORICAL_SEASON };
+        : {...newsToSave, season: newsToSave.season?.trim() || HISTORICAL_SEASON};
+
+      if (!isNews(finalNews)) {
+        setError('Revisa título, resumen, categoría, temporada, contenido e imagen antes de guardar la noticia.');
+        return;
+      }
 
       await set(newsRef, finalNews);
       setSuccess(`La noticia "${finalNews.title}" se guardó correctamente.`);
       setEditingNews(null);
-      refetch();
+      void refetch();
     } catch (err) {
       setError('No se pudo guardar la noticia.');
       console.error(err);
@@ -42,14 +126,14 @@ const NewsAdminScreen: React.FC = () => {
   };
 
   const handleDeleteNews = async (newsId: string) => {
-    if (!window.confirm("¿Seguro que deseas eliminar esta noticia?")) return;
+    if (!window.confirm('¿Seguro que deseas eliminar esta noticia?')) return;
     setError('');
     setSuccess('');
     try {
       const newsRef = ref(database, `data/news/${newsId}`);
       await set(newsRef, null);
       setSuccess('La noticia se eliminó correctamente.');
-      refetch();
+      void refetch();
     } catch (err) {
       setError('No se pudo eliminar la noticia.');
       console.error(err);
@@ -63,71 +147,12 @@ const NewsAdminScreen: React.FC = () => {
       date: '',
       season: CURRENT_SEASON,
       image: '/assets/news/default.webp',
-      category: '',
+      category: 'Liga Premier',
       content: '',
       summary: '',
       active: true,
     });
   };
-
-  const NewsForm = ({ newsItem, onSave }: { newsItem: News, onSave: (news: News) => void }) => {
-    const [formData, setFormData] = useState(newsItem);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      const { name, value, type } = e.target;
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-    };
-
-    return (
-      <div className="bg-white p-6 rounded-lg shadow mb-8">
-        <h3 className="text-xl font-bold mb-4">{newsItem.id.startsWith('news_') ? 'Agregar noticia' : 'Editar noticia'}</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Título</label>
-                <input type="text" name="title" value={formData.title} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
-            </div>
-            <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">URL de imagen</label>
-                <input type="text" name="image" value={formData.image} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
-            </div>
-            <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Contenido</label>
-                <textarea name="content" value={formData.content} onChange={handleChange} rows={6} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Categoría</label>
-              <select name="category" value={formData.category} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
-                <option></option>
-                <option>Torneo Fut 6</option>
-                <option>Liga Premier</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="season" className="block text-sm font-medium text-gray-700">Temporada</label>
-              <input
-                id="season"
-                type="text"
-                name="season"
-                value={formData.season || HISTORICAL_SEASON}
-                onChange={handleChange}
-                placeholder={CURRENT_SEASON}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"
-              />
-              <p className="mt-1 text-xs text-gray-500">Ejemplo: 2026 o 2025/26.</p>
-            </div>
-            <div className="flex items-center">
-                <input type="checkbox" name="active" checked={formData.active} onChange={handleChange} className="h-4 w-4 rounded border-gray-300" />
-                <label htmlFor="active" className="ml-2 block text-sm text-gray-900">Activa</label>
-            </div>
-        </div>
-        <div className="mt-6 flex justify-end gap-4">
-            <button onClick={() => setEditingNews(null)} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancelar</button>
-            <button onClick={() => onSave(formData)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">Guardar noticia</button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
@@ -135,7 +160,12 @@ const NewsAdminScreen: React.FC = () => {
         <SectionTitle title="Administrar noticias" subtitle="Gestiona las noticias del club" />
 
         {editingNews ? (
-            <NewsForm newsItem={editingNews} onSave={handleSaveNews} />
+            <NewsForm
+              key={editingNews.id}
+              newsItem={editingNews}
+              onCancel={() => setEditingNews(null)}
+              onSave={handleSaveNews}
+            />
         ) : (
             <div className="flex justify-end mb-4">
                 <button onClick={handleAddNewNews} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">+ Agregar noticia</button>
@@ -154,7 +184,7 @@ const NewsAdminScreen: React.FC = () => {
               onRetry={() => void refetch()}
             >
                 <div className="space-y-4">
-                    {[...news].reverse().map(article => (
+                    {[...news].reverse().map((article) => (
                         <div key={article.id} className="p-4 border rounded-lg flex justify-between items-center">
                             <div>
                                 <p className="font-bold">{article.title}</p>

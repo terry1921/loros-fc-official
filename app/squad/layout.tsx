@@ -1,19 +1,14 @@
-import React from 'react';
-import {Navbar} from '../components/layout';
+import type {ReactNode} from 'react';
 
 interface SquadLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const SquadLayout: React.FC<SquadLayoutProps> = ({ children }) => {
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
-      <Navbar />
-      <main>
-        {children}
-      </main>
-    </div>
-  );
+export const metadata = {
+  title: 'Plantilla',
+  description: 'Conoce a la plantilla y los jugadores de Loros Fútbol Club.',
 };
+
+const SquadLayout = ({children}: SquadLayoutProps) => children;
 
 export default SquadLayout;

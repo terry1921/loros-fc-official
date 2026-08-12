@@ -2,13 +2,18 @@ import React from "react";
 import {News} from "../types";
 import Image from "next/image";
 import {getOptimizedImageSource} from "../lib/optimized-image";
+import Link from "next/link";
 
 interface FeaturedNewProps {
   featuredNews: News;
 }
 
 export const FeaturedNew: React.FC<FeaturedNewProps> = ({featuredNews}) => {
-  return <div className="md:col-span-2 relative rounded-2xl overflow-hidden h-96 group cursor-pointer">
+  return <Link
+    href={`/news/${encodeURIComponent(featuredNews.id)}`}
+    aria-label={`Leer noticia destacada: ${featuredNews.title}${featuredNews.date ? `, publicada el ${featuredNews.date}` : ''}`}
+    className="md:col-span-2 relative rounded-2xl overflow-hidden h-96 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+  >
     <div className="absolute inset-0 bg-emerald-900"></div>
     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10"></div>
     <div className="absolute bottom-0 left-0 p-8 z-20 max-w-3xl">
@@ -27,5 +32,5 @@ export const FeaturedNew: React.FC<FeaturedNewProps> = ({featuredNews}) => {
     <div className="absolute inset-0 flex items-center justify-center opacity-30">
       <Image src={getOptimizedImageSource(featuredNews.image)} alt={`Imagen de la noticia: ${featuredNews.title}`} className="object-cover" fill sizes="100vw"/>
     </div>
-  </div>
+  </Link>
 }

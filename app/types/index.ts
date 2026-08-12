@@ -1,6 +1,20 @@
-export type Position = 'Portero' | 'Defensa' | 'Medio' | 'Delantero' | "Jugador";
-export type Category = 'Playera' | 'Sticker' | 'Iman' | 'Pin' | 'Bumper Sticker'
-export type NewsCategory = 'Torneo Fut 6' | 'Liga Premier' | ''
+export type Position =
+  | 'Goalkeeper'
+  | 'Defender'
+  | 'Midfielder'
+  | 'Forward'
+  | 'Player'
+  | 'Portero'
+  | 'Defensa'
+  | 'Medio'
+  | 'Delantero'
+  | 'Jugador';
+export type Category = 'Playera' | 'Sticker' | 'Iman' | 'Pin' | 'Bumper Sticker';
+export type NewsCategory = 'Torneo Fut 6' | 'Liga Premier' | 'Copa Premier';
+export type MatchResult = 'W' | 'L' | 'D';
+export type Season = `${number}` | `${number}/${number}` | `Copa ${number}`;
+
+export type Identified<T> = T & { id: string };
 
 export type FirebaseCollection<T> = Record<string, T> | T[] | null | undefined;
 
@@ -11,15 +25,18 @@ export interface Data {
   players?: Player[];
 }
 
-export interface Match {
+export interface MatchBase {
+  home?: boolean;
   opponent: string;
   opponentLogo?: string;
+}
+
+export interface Match extends MatchBase {
   date?: string;
   time?: string;
   stadium?: string;
-  home?: boolean;
   score?: string;
-  result?: 'W' | 'L' | 'D';
+  result?: MatchResult;
   scorers?: Scorer[];
 }
 
@@ -32,7 +49,7 @@ export interface Player {
   id: string;
   name: string;
   number: number;
-  position: string;
+  position: Position;
   img: string;
   photoUrl: string;
   active: boolean;
@@ -42,7 +59,7 @@ export interface News {
   id: string;
   title: string;
   date: string;
-  season?: string;
+  season?: Season;
   image: string;
   category: NewsCategory;
   content: string;
@@ -60,12 +77,14 @@ export interface Product {
 }
 
 export interface Directive {
+  id: string;
   name: string;
   role: string;
   photoUrl: string;
 }
 
 export interface Sponsor {
+  id: string;
   name: string;
   logoUrl: string;
   url: string;

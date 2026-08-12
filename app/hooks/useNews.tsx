@@ -7,5 +7,5 @@ export const useNews = () => {
     'No se pudieron cargar las noticias.',
   );
 
-  return {news, loading, error, refetch};
+  return {n: news, loading, error, refetch};
 };

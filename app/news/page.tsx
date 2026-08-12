@@ -1,11 +1,12 @@
 'use client';
 
-import { useNews } from '../hooks/useNews';
 import {News} from "../types";
 import {DataState, FeaturedNew, SectionTitle} from "../components";
 import {StandardNews} from "../components/StandardNews";
 import React, {useMemo, useState} from "react";
 import {getNewsSeason, sortSeasons} from "../lib/seasons";
+import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
+import {isNews} from '../lib/validation';
 
 function loadViews(news: News[]) {
   const featuredNews = news[0];
@@ -18,7 +19,7 @@ function loadViews(news: News[]) {
   </div>;
 }
 
-function NewsSeasonGroup({season, news}: {season: string; news: News[]}) {
+function NewsSeasonGroup({season, news}: Readonly<{ season: string; news: News[] }>) {
   return (
     <section aria-labelledby={`season-${season}`} className="mb-16 last:mb-0">
       <div className="mb-6 flex items-center gap-4">
@@ -33,12 +34,15 @@ function NewsSeasonGroup({season, news}: {season: string; news: News[]}) {
 }
 
 const NewsScreen: React.FC = () => {
-  const {news, loading, error, refetch} = useNews();
+  const {items: news, loading, error, refetch} = useFirebaseCollection<News>(
+    'data/news',
+    'No se pudieron cargar las noticias.',
+    {validate: isNews},
+  );
   const [selectedSeason, setSelectedSeason] = useState('Todas');
-
   const groupedNews = useMemo(() => {
     const activeNews = news
-      .filter((newsItem) => newsItem.active !== false)
+      .filter((newsItem) => newsItem.active)
       .sort((a, b) => b.id.localeCompare(a.id));
     const groups = new Map<string, News[]>();
 

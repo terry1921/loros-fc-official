@@ -3,16 +3,23 @@
 import React, {useState} from 'react';
 import Link from 'next/link';
 import { database } from '../lib/firebase';
-import {ref, set, push, remove} from 'firebase/database';
+import {ref, set, remove} from 'firebase/database';
 import {DataState, SectionTitle} from '../components';
 import { Product, Category } from '../types';
 import withAuth from '../components/withAuth';
 import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
+import {createClientStableId} from '../lib/firebase-data';
+import {isProduct} from '../lib/validation';
+
+function isNewProductId(id: string) {
+  return id.startsWith('product-');
+}
 
 const ProductsAdminScreen: React.FC = () => {
   const {items: products, loading, error: fetchError, refetch} = useFirebaseCollection<Product>(
     'data/products',
     'No se pudieron cargar los productos.',
+    {validate: isProduct},
   );
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -22,11 +29,21 @@ const ProductsAdminScreen: React.FC = () => {
     if (!activeProduct) return;
     setError('');
     setSuccess('');
-    try {
-      const productToSave = { ...activeProduct };
-      const productRef = productToSave.id ? ref(database, `data/products/${productToSave.id}`) : push(ref(database, 'data/products'));
 
-      const { id, ...dbProduct } = productToSave;
+    const candidate: Product = {
+      ...activeProduct,
+      features: activeProduct.features.map((feature) => feature.trim()).filter(Boolean),
+    };
+
+    if (!isProduct(candidate)) {
+      setError('Revisa nombre, categoría, imagen, características y URL con https:// antes de guardar.');
+      return;
+    }
+
+    try {
+      const productRef = ref(database, `data/products/${candidate.id}`);
+
+      const { id, ...dbProduct } = candidate;
       
       await set(productRef, dbProduct);
       setSuccess('El producto se guardó correctamente.');
@@ -86,7 +103,7 @@ const ProductsAdminScreen: React.FC = () => {
 
   const openAddForm = () => {
     setActiveProduct({
-      id: '',
+      id: createClientStableId('product'),
       name: '',
       category: 'Playera',
       image: '',
@@ -109,7 +126,7 @@ const ProductsAdminScreen: React.FC = () => {
 
         {activeProduct && (
           <div className="bg-white p-6 rounded-lg shadow mb-8">
-            <h3 className="text-xl font-bold mb-4">{activeProduct.id ? 'Editar producto' : 'Agregar producto'}</h3>
+            <h3 className="text-xl font-bold mb-4">{isNewProductId(activeProduct.id) ? 'Agregar producto' : 'Editar producto'}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Nombre</label>

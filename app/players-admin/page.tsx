@@ -1,17 +1,18 @@
 'use client';
 
 import React, {useState} from 'react';
-import { database } from '../lib/firebase';
+import {database} from '../lib/firebase';
 import {ref, set} from 'firebase/database';
 import {DataState, SectionTitle} from '../components';
-import { Player } from '../types';
+import {Player, Position} from '../types';
 import withAuth from '../components/withAuth';
 import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
+import {createClientStableId} from '../lib/firebase-data';
+import {isPlayer} from '../lib/validation';
 
-// Generate a unique ID for new players
-const generateUniqueId = () => `player_${new Date().getTime()}`;
+const generateUniqueId = () => createClientStableId('player');
 
-const getPositionImg = (position: string) => {
+const getPositionImg = (position: Position) => {
   switch (position) {
     case 'Goalkeeper':
       return 'bg-blue-500';
@@ -26,23 +27,94 @@ const getPositionImg = (position: string) => {
   }
 };
 
+function isNewPlayerId(id: string) {
+  return id.startsWith('player-') || id.startsWith('player_');
+}
+
+type PlayerFormProps = {
+  player: Player;
+  onCancel: () => void;
+  onSave: (player: Player) => void;
+};
+
+function PlayerForm({player, onCancel, onSave}: PlayerFormProps) {
+  const [formData, setFormData] = useState(player);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const {name, value, type} = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : name === 'number' ? Number(value) : value,
+    }));
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow mb-8">
+      <h3 className="text-xl font-bold mb-4">{isNewPlayerId(player.id) ? 'Agregar jugador' : 'Editar jugador'}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+              <label className="block text-sm font-medium text-gray-700">Nombre</label>
+              <input type="text" name="name" value={formData.name} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
+          </div>
+          <div>
+              <label className="block text-sm font-medium text-gray-700">Número</label>
+              <input type="number" name="number" value={formData.number} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
+          </div>
+          <div>
+              <label className="block text-sm font-medium text-gray-700">Posición</label>
+              <select name="position" value={formData.position} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                  <option>Goalkeeper</option>
+                  <option>Defender</option>
+                  <option>Midfielder</option>
+                  <option>Forward</option>
+              </select>
+          </div>
+           <div>
+              <label className="block text-sm font-medium text-gray-700">URL de fotografía</label>
+              <input type="text" name="photoUrl" value={formData.photoUrl} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
+          </div>
+          <div className="flex items-center">
+              <input type="checkbox" name="active" checked={formData.active} onChange={handleChange} className="h-4 w-4 rounded border-gray-300" />
+              <label htmlFor="active" className="ml-2 block text-sm text-gray-900">Activo</label>
+          </div>
+      </div>
+      <div className="mt-6 flex justify-end gap-4">
+          <button onClick={onCancel} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancelar</button>
+          <button onClick={() => onSave(formData)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">Guardar jugador</button>
+      </div>
+    </div>
+  );
+}
+
 const PlayersAdminScreen: React.FC = () => {
   const {items: players, loading, error: fetchError, refetch} = useFirebaseCollection<Player>(
     'data/players',
     'No se pudieron cargar los jugadores.',
+    {validate: isPlayer},
   );
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
-
   const handleSavePlayer = async (playerToSave: Player) => {
     if (!playerToSave.id) return;
     setError('');
     setSuccess('');
+
+    const candidate: Player = {
+      ...playerToSave,
+      number: Number(playerToSave.number),
+      img: getPositionImg(playerToSave.position),
+    };
+
+    if (!isPlayer(candidate)) {
+      setError('Revisa que el jugador tenga nombre, número, posición y una fotografía válida antes de guardar.');
+      return;
+    }
+
     try {
-      const playerWithImg = { ...playerToSave, img: getPositionImg(playerToSave.position) };
       const playerRef = ref(database, `data/players/${playerToSave.id}`);
-      await set(playerRef, playerWithImg);
+      await set(playerRef, candidate);
       setSuccess(`El jugador ${playerToSave.name} se guardó correctamente.`);
       setEditingPlayer(null);
       await refetch();
@@ -53,7 +125,7 @@ const PlayersAdminScreen: React.FC = () => {
   };
 
   const handleDeletePlayer = async (playerId: string) => {
-    if (!window.confirm("¿Seguro que deseas eliminar a este jugador?")) return;
+    if (!window.confirm('¿Seguro que deseas eliminar a este jugador?')) return;
     setError('');
     setSuccess('');
     try {
@@ -79,60 +151,18 @@ const PlayersAdminScreen: React.FC = () => {
     });
   };
 
-  const PlayerForm = ({ player, onSave }: { player: Player, onSave: (player: Player) => void }) => {
-    const [formData, setFormData] = useState(player);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const { name, value, type } = e.target;
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-    };
-
-    return (
-      <div className="bg-white p-6 rounded-lg shadow mb-8">
-        <h3 className="text-xl font-bold mb-4">{player.id.startsWith('player_') ? 'Agregar jugador' : 'Editar jugador'}</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Nombre</label>
-                <input type="text" name="name" value={formData.name} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
-            </div>
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Número</label>
-                <input type="number" name="number" value={formData.number} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
-            </div>
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Posición</label>
-                <select name="position" value={formData.position} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
-                    <option>Goalkeeper</option>
-                    <option>Defender</option>
-                    <option>Midfielder</option>
-                    <option>Forward</option>
-                </select>
-            </div>
-             <div>
-                <label className="block text-sm font-medium text-gray-700">URL de fotografía</label>
-                <input type="text" name="photoUrl" value={formData.photoUrl} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" />
-            </div>
-            <div className="flex items-center">
-                <input type="checkbox" name="active" checked={formData.active} onChange={handleChange} className="h-4 w-4 rounded border-gray-300" />
-                <label htmlFor="active" className="ml-2 block text-sm text-gray-900">Activo</label>
-            </div>
-        </div>
-        <div className="mt-6 flex justify-end gap-4">
-            <button onClick={() => setEditingPlayer(null)} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancelar</button>
-            <button onClick={() => onSave(formData)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">Guardar jugador</button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="pt-32 pb-20 min-h-screen bg-gray-50">
       <div className="container mx-auto px-4">
         <SectionTitle title="Administrar jugadores" subtitle="Gestiona la plantilla del equipo" />
 
         {editingPlayer ? (
-            <PlayerForm player={editingPlayer} onSave={handleSavePlayer} />
+            <PlayerForm
+              key={editingPlayer.id}
+              player={editingPlayer}
+              onCancel={() => setEditingPlayer(null)}
+              onSave={handleSavePlayer}
+            />
         ) : (
             <div className="flex justify-end mb-4">
                 <button onClick={handleAddNewPlayer} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">+ Agregar jugador</button>
@@ -151,7 +181,7 @@ const PlayersAdminScreen: React.FC = () => {
               onRetry={() => void refetch()}
             >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {players.map(player => (
+                    {players.map((player) => (
                         <div key={player.id} className="p-4 border rounded-lg flex justify-between items-center">
                             <div>
                                 <p className="font-bold">{player.name} (#{player.number})</p>

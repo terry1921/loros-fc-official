@@ -2,13 +2,18 @@ import React from "react";
 import {News} from "../types";
 import Image from "next/image";
 import {getOptimizedImageSource} from "../lib/optimized-image";
+import Link from "next/link";
 
 interface StandardNewsProps {
   news: News
 }
 
 export const StandardNews: React.FC<StandardNewsProps> = ({news}) => {
-  return <div className="flex gap-4 bg-white p-4 rounded-xl shadow hover:shadow-md transition-shadow">
+  return <Link
+    href={`/news/${encodeURIComponent(news.id)}`}
+    aria-label={`Leer noticia: ${news.title}${news.date ? `, publicada el ${news.date}` : ''}`}
+    className="flex gap-4 bg-white p-4 rounded-xl shadow hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
+  >
     <div
       className="relative w-32 h-32 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center bg-emerald-100">
       <Image src={getOptimizedImageSource(news.image)} alt={`Imagen de la noticia: ${news.title}`} className="object-cover" fill sizes="128px"/>
@@ -18,5 +23,5 @@ export const StandardNews: React.FC<StandardNewsProps> = ({news}) => {
       <h4 className="text-lg font-bold text-gray-800 leading-tight mb-2">{news.title}</h4>
       <span className="text-xs text-gray-400">{news.date}</span>
     </div>
-  </div>
+  </Link>
 }
