@@ -6,10 +6,39 @@ import {Layout} from './components/layout';
 
 const inter = Inter({ subsets: ['latin'] });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+function getSiteUrl() {
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+  if (!configuredUrl) {
+    return new URL('http://localhost:3000');
+  }
+
+  try {
+    return new URL(configuredUrl);
+  } catch {
+    return new URL('http://localhost:3000');
+  }
+}
+
+const siteUrl = getSiteUrl();
+const siteOrigin = siteUrl.origin;
+const clubJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SportsTeam',
+  name: 'Loros Fútbol Club',
+  alternateName: 'Loros FC',
+  sport: 'Fútbol',
+  url: siteOrigin,
+  logo: new URL('/assets/shields/loros_fc_shield.png', siteOrigin).toString(),
+  email: 'lorosfcqro@gmail.com',
+  sameAs: [
+    'https://www.facebook.com/profile.php?id=61583836440400',
+    'https://www.instagram.com/lorosfcqro/',
+  ],
+};
 
 export const metadata: Metadata = {
-  ...(siteUrl ? {metadataBase: new URL(siteUrl)} : {}),
+  metadataBase: siteUrl,
   title: {
     default: 'Loros FC | Sitio Oficial',
     template: '%s | Loros FC',
@@ -17,11 +46,11 @@ export const metadata: Metadata = {
   description: 'Sitio oficial de Loros Fútbol Club: noticias, plantilla, partidos, tienda y oportunidades de patrocinio.',
   keywords: ['Loros FC', 'Loros Fútbol Club', 'fútbol mexicano', 'fútbol en Querétaro', 'noticias Loros FC'],
   applicationName: 'Loros FC',
-  alternates: siteUrl ? {canonical: siteUrl} : undefined,
+  alternates: {canonical: '/'},
   openGraph: {
     type: 'website',
     locale: 'es_MX',
-    url: siteUrl || undefined,
+    url: '/',
     siteName: 'Loros FC',
     title: 'Loros FC | Sitio Oficial',
     description: 'Noticias, plantilla, partidos, tienda y oportunidades de patrocinio de Loros Fútbol Club.',
@@ -53,6 +82,10 @@ export default function RootLayout({
   return (
     <html lang="es-MX" suppressHydrationWarning>
       <body className={inter.className}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{__html: JSON.stringify(clubJsonLd)}}
+        />
         <Layout>{children}</Layout>
         <SpeedInsights />
       </body>

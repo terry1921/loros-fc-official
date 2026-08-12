@@ -1,15 +1,18 @@
 'use client';
 
 import React, {useMemo} from 'react';
+import {limitToLast, orderByKey} from 'firebase/database';
 import {ArrowRight, ShoppingBag} from 'lucide-react';
 import Link from 'next/link';
 import {Button, DataState, MatchCard, NewsCard} from './components';
-import {Data, News} from "./types";
+import {Data, Match, News} from "./types";
 import {CURRENT_SEASON} from './lib/seasons';
-import {normalizeData} from './lib/firebase-data';
+import {normalizeMatch, normalizeNextMatch} from './lib/firebase-data';
+import {isNews} from './lib/validation';
+import {useFirebaseCollection} from './hooks/useFirebaseCollection';
 import {useFirebaseValue} from './hooks/useFirebaseValue';
 
-const EMPTY_DATA: Data = {};
+const EMPTY_MATCH: Match | null = null;
 
 function shopSection() {
   return <section className="py-24 bg-emerald-900 relative overflow-hidden">
@@ -101,16 +104,42 @@ function getDataCards(data: Data) {
 }
 
 const HomeScreen: React.FC = () => {
-  const {value: data, loading, error, refetch} = useFirebaseValue<Data>(
-    'data',
-    normalizeData,
-    EMPTY_DATA,
-    'No se pudo cargar la información del club.',
+  const latestNewsQuery = useMemo(() => [orderByKey(), limitToLast(3)], []);
+  const {value: lastMatch, loading: lastMatchLoading, error: lastMatchError, refetch: refetchLastMatch} = useFirebaseValue<Match | null>(
+    'data/lastMatch',
+    normalizeMatch,
+    EMPTY_MATCH,
+    'No se pudo cargar el último partido.',
   );
-  const news = useMemo(() => (data.news || [])
+  const {value: nextMatch, loading: nextMatchLoading, error: nextMatchError, refetch: refetchNextMatch} = useFirebaseValue<Match | null>(
+    'data/nextMatch',
+    normalizeNextMatch,
+    EMPTY_MATCH,
+    'No se pudo cargar el próximo partido.',
+  );
+  const {items: latestNewsItems, loading: newsLoading, error: newsError, refetch: refetchNews} = useFirebaseCollection<News>(
+    'data/news',
+    'No se pudo cargar la información del club.',
+    {
+      queryConstraints: latestNewsQuery,
+      queryKey: 'latest-news-3',
+      validate: isNews,
+    },
+  );
+
+  const data = useMemo<Data>(() => ({
+    lastMatch: lastMatch || undefined,
+    nextMatch: nextMatch || undefined,
+  }), [lastMatch, nextMatch]);
+  const news = useMemo(() => latestNewsItems
     .filter((newsItem) => newsItem.active !== false)
     .sort((a, b) => b.id.localeCompare(a.id))
-    .slice(0, 3), [data.news]);
+    .slice(0, 3), [latestNewsItems]);
+  const loading = newsLoading || lastMatchLoading || nextMatchLoading;
+  const error = newsError || nextMatchError || lastMatchError;
+  const refetch = async () => {
+    await Promise.all([refetchNews(), refetchLastMatch(), refetchNextMatch()]);
+  };
 
   return (
     <>

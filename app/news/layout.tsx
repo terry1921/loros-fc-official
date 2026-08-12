@@ -1,20 +1,14 @@
-import React from 'react';
-import {Navbar} from '../components/layout';
-
+import type {ReactNode} from 'react';
 
 interface NewsLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const NewsLayout: React.FC<NewsLayoutProps> = ({ children }) => {
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
-      <Navbar />
-      <main>
-        {children}
-      </main>
-    </div>
-  );
+export const metadata = {
+  title: 'Noticias',
+  description: 'Noticias oficiales de Loros Fútbol Club organizadas por temporada.',
 };
+
+const NewsLayout = ({children}: NewsLayoutProps) => children;
 
 export default NewsLayout;

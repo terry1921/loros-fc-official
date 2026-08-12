@@ -1,30 +1,15 @@
 'use client';
 
-import {useEffect} from 'react';
-import {useRouter} from 'next/navigation';
-import {useAuthState} from 'react-firebase-hooks/auth';
-import {auth} from '../lib/firebase';
+import type {ComponentType, FC} from 'react';
+import AuthGuard from './AuthGuard';
 
-const withAuth = <P extends object>(WrappedComponent: React.ComponentType<P>) => {
-  const WithAuthComponent: React.FC<P> = (props) => {
-    const [user, loading] = useAuthState(auth);
-    const router = useRouter();
-
-    useEffect(() => {
-      if (!loading && !user) {
-        router.push('/login');
-      }
-    }, [user, loading, router]);
-
-    if (loading) {
-      return <p role="status">Cargando...</p>;
-    }
-
-    if (!user) {
-      return null; // Or a redirect component
-    }
-
-    return <WrappedComponent {...props} />;
+const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
+  const WithAuthComponent: FC<P> = (props) => {
+    return (
+      <AuthGuard requireAuth>
+        <WrappedComponent {...props} />
+      </AuthGuard>
+    );
   };
 
   return WithAuthComponent;

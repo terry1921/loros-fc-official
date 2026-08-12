@@ -4,9 +4,10 @@ import React, {Suspense} from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {DataState, PlayerCard, SectionTitle} from '../components';
-import { Player } from '../types';
+import { Player, Position } from '../types';
 import { CURRENT_SEASON } from '../lib/seasons';
 import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
+import {isPlayer} from '../lib/validation';
 
 const filterOptions: { label: string; value?: Player['position'] }[] = [
   { label: 'Todos' },
@@ -59,8 +60,9 @@ const SquadContent: React.FC = () => {
   const {items: players, loading, error, refetch} = useFirebaseCollection<Player>(
     'data/players',
     'No se pudieron cargar los jugadores.',
+    {validate: isPlayer},
   );
-  const selectedPosition: string = searchParams.get('position') || '';
+  const selectedPosition = (searchParams.get('position') || '') as Position | '';
   const filteredPlayers = selectedPosition ? players.filter(player => player.position === selectedPosition) : players;
 
   return getPlayerView(loading, error, selectedPosition, filteredPlayers, () => void refetch());

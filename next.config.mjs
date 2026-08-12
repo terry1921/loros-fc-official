@@ -1,13 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   reactStrictMode: true,
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
@@ -24,19 +17,6 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-  },
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, s-maxage=300, stale-while-revalidate=59',
-          },
-        ],
-      },
-    ];
   },
 };
 

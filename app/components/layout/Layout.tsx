@@ -9,8 +9,14 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
+      <a
+        href="#main-content"
+        className="skip-link"
+      >
+        Saltar al contenido principal
+      </a>
       <Navbar />
-      <main>
+      <main id="main-content" tabIndex={-1}>
         {children}
       </main>
       <Footer />

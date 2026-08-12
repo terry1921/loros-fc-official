@@ -1,15 +1,20 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import {DataState, SectionTitle} from '../components';
 import { Sponsor } from '../types';
 import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
+import {getOptimizedImageSource, isAllowedImageSource, isSafeHttpsUrl} from '../lib/optimized-image';
+import {isSponsor} from '../lib/validation';
 
 const SponsorsScreen: React.FC = () => {
   const {items: sponsors, loading, error, refetch} = useFirebaseCollection<Sponsor>(
     'data/sponsors',
     'No se pudo cargar la información de patrocinadores.',
+    {validate: isSponsor},
   );
+  const safeSponsors = sponsors.filter((sponsor) => isSafeHttpsUrl(sponsor.url));
 
   return (
     <div className="pt-32 pb-20 min-h-screen bg-white">
@@ -36,16 +41,27 @@ const SponsorsScreen: React.FC = () => {
         <DataState
           loading={loading}
           error={error}
-          empty={sponsors.length === 0}
+          empty={safeSponsors.length === 0}
           loadingLabel="Cargando patrocinadores..."
-          emptyTitle="Aún no hay patrocinadores publicados"
-          emptyMessage="Estamos preparando esta sección."
+          emptyTitle="Aún no hay patrocinadores disponibles"
+          emptyMessage="Estamos preparando esta sección con enlaces e imágenes válidas."
           onRetry={() => void refetch()}
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {sponsors.map((sponsor, index) => (
-              <a href={sponsor.url} key={index} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-4 bg-cyan-900 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                <img src={sponsor.logoUrl} alt={sponsor.name} className="max-h-24" />
+            {safeSponsors.map((sponsor) => (
+              <a href={sponsor.url} key={sponsor.id} target="_blank" rel="noopener noreferrer" className="flex min-h-32 items-center justify-center rounded-lg bg-cyan-900 p-4 shadow-md transition-shadow hover:shadow-lg" aria-label={`Visitar el sitio de ${sponsor.name} en una nueva pestaña`}>
+                {isAllowedImageSource(sponsor.logoUrl) ? (
+                  <Image
+                    src={getOptimizedImageSource(sponsor.logoUrl)}
+                    alt={`Logotipo de ${sponsor.name}`}
+                    width={240}
+                    height={96}
+                    sizes="(min-width: 768px) 25vw, 50vw"
+                    className="max-h-24 w-auto object-contain"
+                  />
+                ) : (
+                  <span className="text-center text-sm font-bold text-white">{sponsor.name}</span>
+                )}
               </a>
             ))}
           </div>

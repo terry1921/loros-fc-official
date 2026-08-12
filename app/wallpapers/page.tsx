@@ -28,7 +28,7 @@ export default async function WallpapersPage() {
   const wallpapers = await getWallpapers();
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 pb-20">
       <section className="relative overflow-hidden bg-emerald-950 py-20 text-white md:py-24">
         <div className="absolute inset-0 bg-[url('/assets/textures/carbon-fibre.svg')] opacity-20" aria-hidden="true" />
         <div className="absolute -bottom-40 -right-20 h-96 w-96 rounded-full bg-yellow-400/20 blur-3xl" aria-hidden="true" />
@@ -78,6 +78,6 @@ export default async function WallpapersPage() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

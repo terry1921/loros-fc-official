@@ -81,7 +81,10 @@ export const useLastMatch = () => {
     setSuccess('');
     try {
       const lastMatchRef = ref(database, 'data/lastMatch');
-      await set(lastMatchRef, lastMatch);
+      const payload = lastMatch.scorers && lastMatch.scorers.length > 0
+        ? lastMatch
+        : Object.fromEntries(Object.entries(lastMatch).filter(([key]) => key !== 'scorers'));
+      await set(lastMatchRef, payload);
       setSuccess('La información del último partido se guardó correctamente.');
     } catch (err) {
       setError('No se pudo guardar la información del último partido. ' + err);

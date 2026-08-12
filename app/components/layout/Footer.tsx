@@ -16,21 +16,27 @@ export const Footer: React.FC = () => {
                 className="text-yellow-400">FC</span></span>
             </div>
             <p className="text-emerald-400/60 text-sm leading-relaxed mb-6">
-              El orgullo de la ciudad. Pasión, entrega y fútbol desde 2020.
+              Pasión, entrega y fútbol en cada partido.
             </p>
             <div className="flex gap-4">
-              <div
-                className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-emerald-900 transition-colors cursor-pointer">
-                <Link href={'https://www.facebook.com/profile.php?id=61583836440400'} target="_blank" rel="noopener noreferrer" aria-label="Loros FC en Facebook"><Facebook size={18} aria-hidden="true"/></Link></div>
-              <div
-                className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-emerald-900 transition-colors cursor-pointer">
-                <Link href={'https://www.instagram.com/lorosfcqro/'} target="_blank" rel="noopener noreferrer" aria-label="Loros FC en Instagram"><Instagram size={18} aria-hidden="true"/></Link></div>
-              {/*<div
-                className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-emerald-900 transition-colors cursor-pointer">
-                <Twitter size={18}/></div>
-              <div
-                className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center hover:bg-yellow-400 hover:text-emerald-900 transition-colors cursor-pointer">
-                <Youtube size={18}/></div>*/}
+              <Link
+                href="https://www.facebook.com/profile.php?id=61583836440400"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Loros FC en Facebook"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-900 transition-colors hover:bg-yellow-400 hover:text-emerald-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-emerald-950"
+              >
+                <Facebook size={18} aria-hidden="true"/>
+              </Link>
+              <Link
+                href="https://www.instagram.com/lorosfcqro/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Loros FC en Instagram"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-900 transition-colors hover:bg-yellow-400 hover:text-emerald-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-emerald-950"
+              >
+                <Instagram size={18} aria-hidden="true"/>
+              </Link>
             </div>
           </div>
 
@@ -48,8 +54,6 @@ export const Footer: React.FC = () => {
           <div>
             <h4 className="font-bold text-lg mb-6 text-white">Afición</h4>
             <ul className="space-y-3 text-emerald-400/60 text-sm">
-              {/*<li className="hover:text-yellow-400"><Link href="#">Membresías</Link></li>
-              <li className="hover:text-yellow-400"><Link href="#">Boletos</Link></li>*/}
               <li className="hover:text-yellow-400"><Link href="/shop">Tienda</Link></li>
               <li className="hover:text-yellow-400"><Link href="/wallpapers">Wallpapers</Link></li>
             </ul>

@@ -4,11 +4,13 @@ import React from 'react';
 import {DataState, SectionTitle, DirectiveCard} from '../components';
 import { Directive } from '../types';
 import {useFirebaseCollection} from '../hooks/useFirebaseCollection';
+import {isDirective} from '../lib/validation';
 
 const DirectiveScreen: React.FC = () => {
   const {items: directive, loading, error, refetch} = useFirebaseCollection<Directive>(
     'data/directive',
     'No se pudo cargar la información de la directiva.',
+    {validate: isDirective},
   );
 
   return (
@@ -29,9 +31,9 @@ const DirectiveScreen: React.FC = () => {
             onRetry={() => void refetch()}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {directive.map((member, index) => (
+              {directive.map((member) => (
                 <DirectiveCard
-                  key={index}
+                  key={member.id}
                   name={member.name}
                   role={member.role}
                   photoUrl={member.photoUrl}
